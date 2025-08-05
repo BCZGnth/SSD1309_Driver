@@ -9,7 +9,9 @@
 
 const uint8_t SSD1306_COMMAND_BYTE = 0x00;
 const uint8_t SSD1306_RAM_WRITE_BYTE = 0x40;
-const uint8_t SSD1306_ADDRESS = 0x3c;
+
+#warning SSD1309: The device address can be 0x78 or 0x79 depending on whether th D/C pin is low or high
+const uint8_t SSD1306_ADDRESS = 0x78;
 
 
 // uint8_t SSD1306_I2C_BUFFER[129]; // This is the buffer that will be used to send data to the SSD1306 screen.
