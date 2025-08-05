@@ -41,6 +41,9 @@ const uint8_t VERTICAL_ADDRESSING = 0x01;
 const uint16_t SET_PAGE_ADDRESS = 0x0222; 
 const uint16_t SET_COLUMN_ADDRESS = 0x0221;
 
+#define COLUMN_START_ADDRESS(x) (x)
+#define COLUMN_END_ADDRESS(x) (x) 
+
 
 /* COM Hardware Config */
 const uint16_t SET_COM_HARDWARE_CONFIG = 0x01DA;  // Set COM pins hardware configuration
@@ -101,7 +104,7 @@ const uint8_t ssd1306_startup_sequence[29] = {
     0x20,   // Set Memory addressing mode
     0x10,   //      (00 for Horizontal addressing, 01 for Vertical addressing, 10 for Page ad
     0xA0,   // Set segment re-map COL 127 mapped to SEG 0 (A0 sets normal addressing)
-    0xC0,   // Set COM output scan direction: Scan from COM[n-1] to COM[0]
+    0xC8,   // Set COM output scan direction: Scan from COM[n-1] to COM[0]
     0xDA,   // Set COM pins hardware configuration
     0x12,   // 
     0x81,   // Contrast control

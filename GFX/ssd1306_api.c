@@ -6,7 +6,7 @@
 #include "logger.h"
 
 
-/*
+/**
  * @brief a function for writing a bitmap to the screen
  *
  * @param xlength is expected to be an integer value telling how many rows
@@ -14,16 +14,25 @@
  * @param bitmap expected to be a pointer to some value that is at leat a byte long so that
  */
 void ssd1306_write_bitmap(ScreenDefines Screen, Ssd1306WriteBitmap args) {
+    /** Preliminary checks that may or may not be useful... if a number is bigger than it is supposed to be, the extra bits will probably just be ignored. */
+    // if( (args.xstart > args.xend) || (args.xstart > 128)) return;
+    // if( (args.ystart > args.yend) || (args.ystart > 128)) return;
 
-    /* Set RAM pointer constraints based on x and y values given */
-    /* set RAM pointer */
+    /** Set RAM pointer constraints based on x and y values given */
+    ssd1306_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, HORIZONTAL_ADDRESSING);
+    ssd1306_send_command(Screen, SET_COLUMN_ADDRESS, args.xstart, args.xend);
 
-    size_t size = load_i2c_buffer(Screen, (&SSD1306_RAM_WRITE_BYTE), 1, args.pbitmap, args.ylength);
+    /** For now there is no deciding how to pad/ write odd size bitmaps. I hope your bitmap has a height multiple of 8...*/
+    ssd1306_send_command(Screen, SET_PAGE_ADDRESS, args.ystart / 8, args.yend / 8);
+    size_t size = load_i2c_buffer(Screen, (&SSD1306_RAM_WRITE_BYTE), 1, args.pbitmap, args.length);
 
     ssd_write(Screen, size);
+
+    ssd1306_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, PAGE_ADDRESSING);
+    ssd1306_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 }
 
-/*
+/***
  * @brief A function to set the ram pointer to a position on the  (Dependent on the addressing mode)
  *
  * @param x_start defines the LEFT-most bit (pixel) or 8-bit page (if in page addressing mode)
@@ -37,13 +46,13 @@ void ssd1306_ramWrite(ScreenDefines Screen, Ssd1306RamWrite args) {
     ssd_write(Screen, size);
 }
 
-/*
+/**
 Each page has a capacity of 21 full characters. There are 8 pages,
 so that gives us 168 characters at the max that the display can
 print at one time.
 */
 
-/*
+/**
  * @brief This function prints characters right justified. That means that you can only print as many characters as
  * @brief are specified in the length paramater of the function.
  *
@@ -111,7 +120,7 @@ size_t ssd1306_write_number(ScreenDefines Screen, Ssd1306WriteNumber args) {
 
     uint8_t right_align_character_offset = (args.constrained_length - number_of_chars_written) * 6;
 
-    /* Loading all Zeros into the I2C buffer*/
+    /** Loading all Zeros into the I2C buffer*/
     memset(Screen.pbuffer, 0, 128);
 
     memcpy(Screen.pbuffer, (&SSD1306_RAM_WRITE_BYTE), 1);
@@ -120,9 +129,9 @@ size_t ssd1306_write_number(ScreenDefines Screen, Ssd1306WriteNumber args) {
     for (n = 0; n < number_of_chars_written; n++)
     { // Iterate through all of the characters in the string
 
-        /* Write 5 bytes from a (calculated pointer to a character in the font) to the i2c buffer */
+        /** Write 5 bytes from a (calculated pointer to a character in the font) to the i2c buffer */
 
-        /*      The pointer to the destination buffer is calculated by:
+        /**      The pointer to the destination buffer is calculated by:
          *
          *          Adding 1 to the pointer to the i2c buffer (don't overwrite the SSD1306_RAM_WRITE_BYTE)
          *          Adding (n * 6) to the pointer to the i2c buffer. The multiplier 6 is used because the characters are 5 bytes long and a pad byte is added in between each character
@@ -143,7 +152,7 @@ size_t ssd1306_write_number(ScreenDefines Screen, Ssd1306WriteNumber args) {
     }
 
     ssd_write(Screen, (args.constrained_length * Screen.character.width_pad)); // The number of bytes to write to the i2c buffer is the number of characters multiplied by the width of each character (5) plus the padding (1 byte) between each character
-
+ 
     free(data_to_write); // Free the allocated memory for data_to_write
     data_to_write = NULL; // Set the pointer to NULL to avoid dangling pointers
     level_log(TRACE, "SSD1306: Done Writing Number");
@@ -152,7 +161,7 @@ size_t ssd1306_write_number(ScreenDefines Screen, Ssd1306WriteNumber args) {
     return args.constrained_length * 6;
 }
 
-/*
+/**
  * @param     Screen: the screenDefines structure that general screen definitions
  * @param     args: the Ssd1306WriteNumber struct that holds the specific paramaters for writing a number to the screen 
  *
@@ -181,12 +190,12 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
     // memcpy(Screen.pbuffer, (&SSD1306_RAM_WRITE_BYTE), 1); // Not a useful line since it gets overwritten anyway... put it where it won't
     level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
 
-    /* Loading the I2C buffer */
+    /** Loading the I2C buffer */
     switch (args.scale)
     {
         #warning Scaling only enables a single row of scaled text to be printed to the screen from a single function call
         case 2:
-        /* Scaling the text by 2. (Right now the code does not support anything else...)*/
+        /** Scaling the text by 2. (Right now the code does not support anything else...)*/
             level_log(TRACE, "Print: Scaling the text by 2");
 
             // Set addressing to vertical addressing. (simulate page addressing but across two pages instead of one)
@@ -200,7 +209,7 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
 
             ADD_TO_STACK_DEPTH(); // loading i2c buffer with scaled data
 
-            /* 
+            /** 
              * Iteration for scaling the font. 
              *
              *    Iterate over the number of characters in the char* args.text (denoted by args.length)
@@ -220,7 +229,7 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
 
             for (int char_index = 0; char_index < args.length; char_index++)
             {
-                /* Letter increment is the number by which to offset the buffer when writing the next letter 
+                /** Letter increment is the number by which to offset the buffer when writing the next letter 
                  * Since each letter will take up (width * height) bits, it will take up (width * height / 8) bytes 
                  * So a scaled letter will take up ( (scale * width) * (scale * height) / 8 ) bytes. 
                  * since "scale" will always be (scale * height / 8) since a character is 8 bits (one byte) tall 
@@ -230,8 +239,8 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
                 letter_increment = char_index * Screen.character.width_pad * (args.scale * args.scale);
                 for (int char_column = 0; char_column < 5; char_column++)
                 {
-                    /* Letter column is to calculate the Screen.offset for one column of scaled letter. */
-                    /* Scaling the letter by x will give the scaled letter x^2 times as many columns. */
+                    /** Letter column is to calculate the Screen.offset for one column of scaled letter. */
+                    /** Scaling the letter by x will give the scaled letter x^2 times as many columns. */
                     current_column = char_column * args.scale * args.scale;
                     // tmp = *( real.pfont + ((message_chars[n] - Screen.offset.ascii) * Screen.character.width) + i); // To get the individual bytes of the character
                     tmp16 = scale_lut[*(Screen.offset.pfont + ((message_chars[char_index] - Screen.offset.ascii) * Screen.character.width) + char_column)];
@@ -261,7 +270,7 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
             break;
 
         default:
-        /* No scaling applied, and the message is copied into the i2c buffer */
+        /** No scaling applied, and the message is copied into the i2c buffer */
             level_log(TRACE, "Print: No scale applied");
 
             memcpy(Screen.pbuffer, (&SSD1306_RAM_WRITE_BYTE), 1);
@@ -269,9 +278,9 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
             for (int letter = 0; letter < args.length; letter++)
             { // Iterate through all of the characters in the string
 
-                /* Write 5 bytes from a (calculated pointer to a character in the font) to the i2c buffer */
+                /** Write 5 bytes from a (calculated pointer to a character in the font) to the i2c buffer */
 
-                /*      The pointer to the destination buffer is calculated by:
+                /**      The pointer to the destination buffer is calculated by:
                  *
                  *          Adding 1 to the pointer to the i2c buffer (don't overwrite the SSD1306_RAM_WRITE_BYTE)
                  *          Adding (n * 6) to the pointer to the i2c buffer. The multiplier 6 is used because the characters are 5 bytes long and a pad byte is added in between each character
@@ -296,7 +305,7 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
 
     } // Switch(args.scale)
 
-    /* Writing the contents of the I2C buffer over the bus */
+    /** Writing the contents of the I2C buffer over the bus */
     switch (args.delay)
     {
 
@@ -309,18 +318,18 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
 
     default:
 
-        /* Allocate memory to write a single letter each time */
+        /** Allocate memory to write a single letter each time */
         letter_buffer = calloc((Screen.character.width_pad * (args.scale * args.scale) + Screen.character.pad), sizeof(uint8_t));
         memcpy(letter_buffer, (&SSD1306_RAM_WRITE_BYTE), Screen.offset.control);
 
         level_log(TRACE, "Print: Delay of %d", args.delay);
 
-        /* My own version of the ssd_write function that has a spefic delay for each character built in!! */
+        /** My own version of the ssd_write function that has a spefic delay for each character built in!! */
         for (int letter_index = 0; letter_index < args.length; letter_index++)
         {
             ADD_TO_STACK_DEPTH(); // Adding to the stack depth because this is a different I2C write than anything else in the program
 
-            /* The width of a letter is calculated by the following logic: 
+            /** The width of a letter is calculated by the following logic: 
              * Since each letter will take up (width * height) bits, it will take up (width * height / 8) bytes 
              * So a scaled letter will take up ( (scale * width) * (scale * height) / 8 ) bytes. 
              * since "scale" will always be (scale * height / 8) since a character is 8 bits (one byte) tall 
@@ -329,7 +338,7 @@ size_t ssd1306_print(ScreenDefines Screen, Ssd1306Print args) {
              * Since letter_index holds the index of the letter that we are currently writing to the screen,  */
             memcpy((letter_buffer + Screen.offset.control), (Screen.pbuffer + Screen.offset.control + (letter_index * Screen.character.width_pad * args.scale * args.scale)), (Screen.character.width_pad * (args.scale * args.scale)));
 
-            /* The amount of bytes that will be written over the buffer is equal to the width of a letter (defined in the above comment) */
+            /** The amount of bytes that will be written over the buffer is equal to the width of a letter (defined in the above comment) */
 
             if (!i2c.Write(Screen.i2c_address, letter_buffer, (Screen.character.width_pad * (args.scale * args.scale) + Screen.character.pad)))
             {
@@ -449,29 +458,29 @@ void ssd1306_clear_line(ScreenDefines Screen, Ssd1306ClearLine args)
 
 void ssd1306_blinking_cursor(ScreenDefines Screen, Ssd1306Cursor args)
 {
-    /* Start by keeping track of how many function calls deep we are */
+    /** Start by keeping track of how many function calls deep we are */
     ADD_TO_STACK_DEPTH();
     level_log(TRACE, "Blinking Cursor: page %u, column %u, repeats %u", args.ram_ptr.page, args.ram_ptr.position, args.repeats);
 
     size_t size;
 
-    /* malloc so that the cursor doesn't take up extra space */
+    /** malloc so that the cursor doesn't take up extra space */
     uint8_t* cursor = malloc(5*sizeof(uint8_t));
 
     ssd1306_set_ram_pointer(Screen, args.ram_ptr);
 
-    /* Modifying repeats to translate from number of repeats to iterations of the for loop that have to run */
+    /** Modifying repeats to translate from number of repeats to iterations of the for loop that have to run */
     args.repeats *= 2;
-    /* Using the pre-increment operator rather than adding one to repeats */
+    /** Using the pre-increment operator rather than adding one to repeats */
     args.repeats += 1; // Add one to make sure we end on a blank cursor 
 
     for (int i = 1; i < args.repeats; ++i)
     {
 
-        /* Decide whether to set the cursor all zeros or all ones */
+        /** Decide whether to set the cursor all zeros or all ones */
         memset(cursor, ((i % 2) * 0xFF), 5);
 
-        /* Loading and writing the i2c buffer */
+        /** Loading and writing the i2c buffer */
         size = load_i2c_buffer(Screen, (&SSD1306_RAM_WRITE_BYTE), 1, cursor, 5);
         ssd_write(Screen, size);
 

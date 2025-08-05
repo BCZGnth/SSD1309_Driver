@@ -144,10 +144,11 @@ typedef struct {
 
 typedef struct {
     uint8_t * pbitmap;
+    uint8_t   length;
     uint8_t   xstart;
     uint8_t   ystart;
-    uint8_t   xlength;
-    uint8_t   ylength;
+    uint8_t   xend;
+    uint8_t   yend;
 
     Ssd1306RamPointer ram_ptr;
 } Ssd1306WriteBitmap;
