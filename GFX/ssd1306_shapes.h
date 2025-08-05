@@ -1,7 +1,7 @@
-#ifndef _SSD1306_SHAPES
-#define _SSD1306_SHAPES
+#ifndef _SSD1309_SHAPES
+#define _SSD1309_SHAPES
 
-#include "ssd1306_api.h"
+#include "ssd1309_api.h"
 
 
-#endif // _SSD1306_SHAPES
+#endif // _SSD1309_SHAPES

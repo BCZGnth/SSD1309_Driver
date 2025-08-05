@@ -1,8 +1,8 @@
 #ifndef _DEMO
 #define _DEMO
 
-#include "ssd1306.h"
+#include "ssd1309.h"
 
-void screen_demo(Ssd1306Defines);
+void screen_demo(Ssd1309Defines);
 
 #endif // _DEMO

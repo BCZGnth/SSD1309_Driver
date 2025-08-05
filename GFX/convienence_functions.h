@@ -1,21 +1,21 @@
-#include "ssd1306_api.h"
+#include "ssd1309_api.h"
 
 /* Command Functions */
-void ssd1306_set_ram_pointer(Ssd1306Defines Screen);
+void ssd1309_set_ram_pointer(Ssd1309Defines Screen);
 
 /* I2C functions */
-void ssd_write(Ssd1306Defines Screen);
-size_t load_i2c_buffer(Ssd1306Defines Screen);
+void ssd_write(Ssd1309Defines Screen);
+size_t load_i2c_buffer(Ssd1309Defines Screen);
 
 /* API Functions */
-void   ssd_write(Ssd1306Defines Screen);
-void   ssd1306_startup(Ssd1306Defines Screen);
-void   ssd1306_write_bitmap(Ssd1306Defines Screen);
-void   ssd1306_ramWrite(Ssd1306Defines Screen);
-size_t ssd1306_write_number(Ssd1306Defines Screen); 
-void   ssd1306_cls(Ssd1306Defines Screen);
-size_t ssd1306_print(Ssd1306Defines Screen);
-void   blinking_cursor(Ssd1306Defines Screen);
+void   ssd_write(Ssd1309Defines Screen);
+void   ssd1309_startup(Ssd1309Defines Screen);
+void   ssd1309_write_bitmap(Ssd1309Defines Screen);
+void   ssd1309_ramWrite(Ssd1309Defines Screen);
+size_t ssd1309_write_number(Ssd1309Defines Screen); 
+void   ssd1309_cls(Ssd1309Defines Screen);
+size_t ssd1309_print(Ssd1309Defines Screen);
+void   blinking_cursor(Ssd1309Defines Screen);
 
 
 

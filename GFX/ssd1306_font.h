@@ -1,7 +1,7 @@
-#ifndef _SSD1306_FONT
-#define _SSD1306_FONT
+#ifndef _SSD1309_FONT
+#define _SSD1309_FONT
 
-#include "ssd1306_commands.h"
+#include "ssd1309_commands.h"
 
 // uint8_t* pfont = &font;
 const uint16_t scale_lut[256];
@@ -501,4 +501,4 @@ const uint8_t after[] = {
 };
 */
 
-#endif // _SSD1306_FONT
+#endif // _SSD1309_FONT
