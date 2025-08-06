@@ -91,12 +91,22 @@ void ssd1309_startup(ScreenDefines Screen)
 /* ssd1309 Needs to be called before anything else is called so that the i2c buffer pointer is defined */
 extern uint8_t ascii_font[310]; // Don't know if this is a good way to code or if I should re-arrange the file include order.
 
-/*
- * @param i2c_buffer:   The buffer where the i2c data will be stored
- * @param buffer_size:  The size of the buffer in bytes
+
+/**
+ *  ssd1309 initilization function
+ * @return Ssd1306Defines: A structure that holds all of the data used to write to the screen
  * 
- * @return Ssd1309Defines: a structure for talking to a screen
-*/
+ * @param i2c_buffer: The buffer to store i2c data before we write it to the screen
+ * @param buffer_size: The size of the i2c buffer
+ * @param screen_i2c_address: 7-bit i2c address for the device ( b6, b5, b4, b3, b2, b1, b0 ) The R/W bit will be added in the code depeending on whether we are reading or not 
+ * 
+ * This function calls:
+ *      ssd1309_startup
+ *          Sends the initializer commands over i2c 
+ * 
+ *      ssd1309_cls
+ *          Writes all zeros to the GDDRAM
+ */
 Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t screen_i2c_address){
 
     Ssd1309Defines Screen = {

@@ -88,38 +88,66 @@ const uint16_t SET_DISPLAY_OFFSET = 0x01D3;  // Set Display offset
 const uint8_t NO_OFFSET = 0x00;              //      no display offset
 
 
-const uint8_t ssd1309_startup_length = 29;
+const uint8_t ssd1309_startup_length = 26;
 
-const uint8_t ssd1309_startup_sequence[29] = {
-    0xAE,   // Display OFF  
-    0xD5,   // Set Display clock divide ratio/oscilator frequency
-    0x80,     //   	0x8 (0b1000) RESET frequency,  0x0 (0b0000) RESET divide ratio
-    0xA8,   // set multiplex ratio
-    0x3F,       //   multiplex configuration byte
-    0xD3,   // Set Display offset
-    0x00,       //   no display offset
-    0x40,   // Set Display start line
-    0x8D,   // Charge pump setting
-    0x14,       //   Enable Charge pump
-    0x20,   // Set Memory addressing mode
-    0x10,   //      (00 for Horizontal addressing, 01 for Vertical addressing, 10 for Page ad
-    0xA0,   // Set segment re-map COL 127 mapped to SEG 0 (A0 sets normal addressing)
-    0xC8,   // Set COM output scan direction: Scan from COM[n-1] to COM[0]
+const uint8_t ssd1309_startup_sequence[26] = {
+    0xAE,   // Display OFF
+    0xD5,   // Set Display clock divide ratio/oscillator frequency
+    0x80,   //    Default freq and divide ratio
+    0xA8,   // Set multiplex ratio
+    0x3F,   //    1/64 duty
+    0xD3,   // Set display offset
+    0x00,   //    No offset
+    0x40,   // Set display start line to 0
+    0xAD,   // Set DC-DC Control (SSD1309-specific)
+    0x8A,   //    Enable DC-DC (0x8A = ON, 0x8B = OFF)
+    0x20,   // Set memory addressing mode
+    0x10,   //    Page addressing mode
+    0xA0,   // Set segment re-map (A0 = normal, A1 = flipped)
+    0xC8,   // Set COM output scan direction
     0xDA,   // Set COM pins hardware configuration
-    0x12,   // 
-    0x81,   // Contrast control
-    0xCF,       //  (FF is highest 00 is lowest)
-    0xD9,   // PreCharge Period
-    0xF1,      //    (see datasheet)
-    0xDB,   // Set Vcomh Deselect Level
-    0x40,   //      (some unspecified number times Vcc)
-    0xA4,   // Entire Display ON; resume RAM content display
-    0xA6,   // Set normal/inverse display: Normal
-    0x2E,   // Deactivate Scroll
-    0xAF,   // dISPLAY ON in normal mode
-    0xB4,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
-    0x07,   // Set Lower Columnm start address to 0
-    0x15    // Set Higher Column start address to 4
+    0x12,   //    Alternative COM pin config, disable COM left/right remap
+    0x81,   // Set contrast control
+    0xCF,   //    Reasonable contrast
+    0xD9,   // Set pre-charge period
+    0xF1,   //    Pre-charge and discharge times
+    0xDB,   // Set VCOMH deselect level
+    0x40,   //    ~0.77 × Vcc
+    0xA4,   // Resume to RAM content display
+    0xA6,   // Set normal display (not inverted)
+    0xAF    // Display ON
 };
+/* SSD1306  Obselete */
+// const uint8_t ssd1309_startup_sequence[29] = {
+//     0xAE,   // Display OFF  
+//     0xD5,   // Set Display clock divide ratio/oscilator frequency
+//     0x80,     //   	0x8 (0b1000) RESET frequency,  0x0 (0b0000) RESET divide ratio
+//     0xA8,   // set multiplex ratio
+//     0x3F,       //   multiplex configuration byte
+//     0xD3,   // Set Display offset
+//     0x00,       //   no display offset
+//     0x40,   // Set Display start line
+//     0x8D,   // Charge pump setting
+//     0x14,       //   Enable Charge pump
+//     0x20,   // Set Memory addressing mode
+//     0x10,   //      (00 for Horizontal addressing, 01 for Vertical addressing, 10 for Page ad
+//     0xA0,   // Set segment re-map COL 127 mapped to SEG 0 (A0 sets normal addressing)
+//     0xC8,   // Set COM output scan direction: Scan from COM[n-1] to COM[0]
+//     0xDA,   // Set COM pins hardware configuration
+//     0x12,   // 
+//     0x81,   // Contrast control
+//     0xCF,       //  (FF is highest 00 is lowest)
+//     0xD9,   // PreCharge Period
+//     0xF1,      //    (see datasheet)
+//     0xDB,   // Set Vcomh Deselect Level
+//     0x40,   //      (some unspecified number times Vcc)
+//     0xA4,   // Entire Display ON; resume RAM content display
+//     0xA6,   // Set normal/inverse display: Normal
+//     0x2E,   // Deactivate Scroll
+//     0xAF,   // dISPLAY ON in normal mode
+//     0xB4,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
+//     0x07,   // Set Lower Columnm start address to 0
+//     0x15    // Set Higher Column start address to 4
+// };
 
 #endif // _SSD1309_COMMANDS
