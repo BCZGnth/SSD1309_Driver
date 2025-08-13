@@ -106,7 +106,7 @@ const uint8_t ssd1309_startup_sequence[26] = {
     0xA1,   // Set segment re-map (A0 = normal, A1 = flipped)
     0xC0,   // Set COM output scan direction
     0xDA,   // Set COM pins hardware configuration
-    0x02,   //    Alternative COM pin config, disable COM left/right remap
+    0x12,   //    Alternative COM pin config, disable COM left/right remap
     0x81,   // Set contrast control
     0xCF,   //    Reasonable contrast
     0xD9,   // Set pre-charge period
