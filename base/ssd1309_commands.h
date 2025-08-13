@@ -111,7 +111,7 @@ const uint8_t ssd1309_startup_sequence[29] = {
     0x20,   // Set memory addressing mode
     0x10,   //    Page addressing mode
     0xA0,   // Set segment re-map (A0 = normal, A1 = flipped)
-        0xC0,   // Set COM output scan direction
+    0xC8,   // Set COM output scan direction
     0xDA,   // Set COM pins hardware configuration
         0x02,   //    Alternative COM pin config, disable COM left/right remap
     0x81,   // Set contrast control
