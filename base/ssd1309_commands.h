@@ -105,7 +105,7 @@ const uint8_t ssd1309_startup_sequence[29] = {
     0x3F,   //    1/64 duty
     0xD3,   // Set display offset
     0x00,   //    No offset
-    0x40,   // Set display start line to 0
+    0x48,   // Set display start line to 0
     0xAD,   // Set DC-DC Control (SSD1309-specific)
     0x8A,   //    Enable DC-DC (0x8A = ON, 0x8B = OFF)
     0x20,   // Set memory addressing mode
