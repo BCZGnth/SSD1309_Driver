@@ -58,10 +58,10 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
 
 
     /* Calculate the MSB and LSB commands */
-    uint8_t msb_column = ((args.position >> 4) & 0x0F) | 0x10;
+    uint8_t msb_column =  0x10 | ((args.position >> 4) & 0x0F);
     uint8_t lsb_column = args.position & 0x0F;
     
-    uint8_t msg[3] = {(args.page | 0xB0), msb_column, lsb_column};
+    uint8_t msg[3] = {(0xB0 | args.page), msb_column, lsb_column};
 
     size_t size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), control_length, (&msg[0]), data_length);
 
