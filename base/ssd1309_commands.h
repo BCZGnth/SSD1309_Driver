@@ -13,8 +13,8 @@ extern void ssd1309_cls(ScreenDefines Screen);
 
 
 /* COMMANDS */
-const uint16_t SET_DISPLAY_ON_RESUME_RAM_DISPLAY = 0x00A4;  // Entire Display ON; resume RAM content display
-const uint16_t SET_DISPLAY_ON_IGNORE_RAM_CONTENT = 0x00A5;  // Entire Display ON; resume RAM content display
+const uint16_t SET_DISPLAY_ON_RESUME_RAM_CONTENT_DISPLAY = 0x00A4;  // Entire Display ON; resume RAM content display
+const uint16_t SET_DISPLAY_ON_OUTPUT_IGNORES_RAM_CONTENT = 0x00A5;
 
 const uint16_t SET_DISPLAY_NORMAL = 0x00A6;  // Set normal/inverse display: Normal
 const uint16_t SET_DISPLAY_INVERSE = 0x00A7;  // Set normal/inverse display: Inverse
@@ -47,6 +47,9 @@ const uint8_t VERTICAL_ADDRESSING = 0x01;
 /* Vertical / Horizontal Addressing */
 const uint16_t SET_PAGE_ADDRESS = 0x0222; 
 const uint16_t SET_COLUMN_ADDRESS = 0x0221;
+
+#define SET_LOWER_COLUMN_ADDRESS(x) ((0x0F) & (x))
+#define SET_HIGHER_COLUMN_ADDRESS(x) (0x10 | ((0x0F) & (x)))
 
 #define COLUMN_START_ADDRESS(x) (x)
 #define COLUMN_END_ADDRESS(x) (x) 
@@ -97,7 +100,7 @@ const uint8_t NO_OFFSET = 0x00;              //      no display offset
 
 const uint8_t ssd1309_startup_length = 29;
 
-const uint8_t ssd1309_startup_sequence[29] = {
+const uint8_t ssd1309_startup_sequence[23] = {
     0xAE,   // Display OFF
     0xD5,   // Set Display clock divide ratio/oscillator frequency
         0xF0,   //    High oscilator value, divide by 2
@@ -109,8 +112,8 @@ const uint8_t ssd1309_startup_sequence[29] = {
     0xAD,   // Set DC-DC Control (SSD1309-specific)
     0x8A,   //    Enable DC-DC (0x8A = ON, 0x8B = OFF)
     0x20,   // Set memory addressing mode
-    0x10,   //    Page addressing mode
-    0xA0,   // Set segment re-map (A0 = normal, A1 = flipped)
+    0x00,   //    Horizontal addressing mode (Read the datasheet this is actually what we want)
+    0xA1,   // Set segment re-map (A0 = normal, A1 = flipped)
     0xC8,   // Set COM output scan direction
     0xDA,   // Set COM pins hardware configuration
         0x02,   //    Alternative COM pin config, disable COM left/right remap
@@ -119,14 +122,18 @@ const uint8_t ssd1309_startup_sequence[29] = {
     0xD9,   // Set pre-charge period
         0xF3,   //    Pre-charge and discharge times
     0xDB,   // Set VCOMH deselect level
-        0x34,   //    ~0.77 × Vcc
+    0x40,   //    ~0.77 × Vcc
+};
+
+const uint8_t initializer_length = 6;
+const uint8_t initializer[6] = {
     0xA4,   // Resume to RAM content display
     0xA6,   // Set normal display (not inverted)
-        0x2E,   // Deactivate Scroll
-    0xAF,   // Display ON
-        0xB0,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
-        0x00,   // Set Lower Columnm start address to 0
-        0x10    // Set Higher Column start address to 4
+    0xAF,    // Display ON
+
+    0xB4,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
+    0x07,   // Set Lower Columnm start address to 0
+    0x15    // Set Higher Column start address to 4
 };
 /* SSD1306  Obselete */
 // const uint8_t ssd1309_startup_sequence[29] = {

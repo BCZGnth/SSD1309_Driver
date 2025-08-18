@@ -98,6 +98,12 @@ typedef struct {
  * 
  * Ssd1309WriteNumber
  * 
+ * Ssd1309VLine
+ * 
+ * Ssd1309HLine
+ * 
+ * Ssd1309Rect
+ * 
  * ScreenStringPerLine
  */
 
@@ -173,6 +179,25 @@ typedef struct {
     uint8_t end_page;
 
 } Ssd1309ClearLine;
+
+typedef struct {
+    uint8_t xstart;
+    uint8_t ystart;
+    uint8_t length;
+} Ssd1309VLine;
+
+typedef struct {
+    uint8_t xstart;
+    uint8_t ystart;
+    uint8_t length;
+} Ssd1309HLine;
+
+typedef struct {
+    uint8_t xstart;
+    uint8_t ystart;
+    uint8_t xend;
+    uint8_t yend;
+} Ssd1309Rect;
 
 typedef struct {
     ScreenDefines Screen;
