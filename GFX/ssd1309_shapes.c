@@ -94,7 +94,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HLine Line){
 
     // to set a single bit in the byte in order to write the correct line
     // (horizontal addressing mode does not draw lines of pixels... :(  )
-    uint8_t pixel_in_byte = (1 << (7 - ymod));
+    uint8_t pixel_in_byte = (1 << ymod);
 
     // fill the buffer with the line information
     memset(Screen.pbuffer + 1, pixel_in_byte, Line.length);
