@@ -72,6 +72,11 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
 
 }
 
+ssd1309_reset_addressing(ScreenDefines Screen){
+    ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, 0, 127);
+    ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0, 7);
+    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, HORIZONTAL_ADDRESSING);
+}
 
 /* Sends the startup sequence to the SSD1309 for information on the startup sequence,
  * refer to the definition of the ssd1309_startup_sequence and the DATASHEET which can be found at:
@@ -82,9 +87,14 @@ void ssd1309_startup(ScreenDefines Screen)
     level_log(TRACE, "Starting up the SSD1309");
     size_t size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), Screen.offset.control, Screen.startup_buffer, Screen.startup_size);
     ssd_write(Screen, size);
+
+    ssd1309_cls(Screen);
+
+    size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), Screen.offset.control, &initializer, initializer_length);
+    ssd_write(Screen, size);
+
     level_log(TRACE, "SSD1309: Startup Sequence Done");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_startup
-
 }
 
 
@@ -157,7 +167,6 @@ Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8
 
 
     ssd1309_startup(Screen.Screen);
-    ssd1309_cls(Screen.Screen);
 
     return Screen;
 }

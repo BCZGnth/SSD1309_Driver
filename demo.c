@@ -23,15 +23,25 @@ void screen_demo(Ssd1309Defines OLED){
     ssd1309_blinking_cursor(OLED.Screen, OLED.cursor);
     level_log(TRACE, "Done Blinking Cursor");
 
-    OLED.print.text = "GREAT DEMO!";
-    OLED.print.length = 11;
-    OLED.print.delay = TRUE;
-    OLED.print.scale = 2;
-    OLED.print.ram_ptr.page = 0;
-    OLED.print.ram_ptr.position = 0;
+    for(int i = 0; i < 8; i++) {
+        OLED.print.text = "Line: ",
+        OLED.print.length = 6;
+        OLED.print.delay = TRUE;
+        OLED.print.scale = 1;
+        OLED.print.ram_ptr.page = i;
+        OLED.print.ram_ptr.position = 10;
 
-    // __delay_ms(1)
-    ssd1309_print(OLED.Screen, OLED.print);
+        OLED.write_number.ram_ptr.position = 80;
+        OLED.write_number.ram_ptr.page = i;
+        OLED.write_number.scale = 1;
+        OLED.write_number.constrained_length = 4;
+        OLED.write_number.right_align = 1;
+        OLED.write_number.data = i;
+
+        // __delay_ms(1)
+        ssd1309_print(OLED.Screen, OLED.print);
+        ssd1309_write_number(OLED.Screen, OLED.write_number);
+    }
 
     level_log(TRACE, "Blinking Cursor at %d", OLED.print.ram_ptr.position);
 

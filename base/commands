@@ -1,0 +1,46 @@
+
+const uint16_t SET_CONTRAST_CONTROL               = 0x81;
+const uint16_t ENTIRE_DISPLAY_ON_IGNORE_RAM      = 0xA4;
+const uint16_t ENTIRE_DISPLAY_ON_FORCE_ON        = 0xA5;
+const uint16_t SET_NORMAL_DISPLAY                 = 0xA6;
+const uint16_t SET_INVERSE_DISPLAY                = 0xA7;
+const uint16_t SET_DISPLAY_OFF                    = 0xAE;
+const uint16_t SET_DISPLAY_ON                     = 0xAF;
+
+const uint16_t SET_NOP                            = 0xE3;
+
+// Scrolling Commands
+const uint16_t CONTINUOUS_H_SCROLL_RIGHT          = 0x26;
+const uint16_t CONTINUOUS_H_SCROLL_LEFT           = 0x27;
+const uint16_t DEACTIVATE_SCROLL                  = 0x2E;
+const uint16_t ACTIVATE_SCROLL                    = 0x2F;
+const uint16_t SET_VERTICAL_SCROLL_AREA           = 0xA3;
+
+// Addressing Setting Commands
+const uint16_t SET_LOWER_COLUMN_ADDR              = 0x00; // OR with lower nibble (0x0–0xF)
+const uint16_t SET_HIGHER_COLUMN_ADDR             = 0x10; // OR with upper nibble (0x0–0xF)
+const uint16_t SET_MEMORY_ADDRESSING_MODE         = 0x20;
+const uint16_t SET_COLUMN_ADDRESS                 = 0x21;
+const uint16_t SET_PAGE_ADDRESS                   = 0x22;
+
+// Hardware Configuration
+const uint16_t SET_DISPLAY_START_LINE             = 0x40; // OR with 0x00–0x3F
+const uint16_t SET_SEGMENT_REMAP_NORMAL           = 0xA0;
+const uint16_t SET_SEGMENT_REMAP_REMAP            = 0xA1;
+const uint16_t SET_MULTIPLEX_RATIO                = 0xA8;
+const uint16_t COM_SCAN_DIR_INC                   = 0xC0;
+const uint16_t COM_SCAN_DIR_DEC                   = 0xC8;
+const uint16_t SET_DISPLAY_OFFSET                 = 0xD3;
+const uint16_t SET_COM_PINS_CONFIG                = 0xDA;
+
+// Timing & Driving Scheme
+const uint16_t SET_DISPLAY_CLOCK_DIVIDE_RATIO     = 0xD5;
+const uint16_t SET_PRECHARGE_PERIOD               = 0xD9;
+const uint16_t SET_VCOMH_DESELECT_LEVEL           = 0xDB;
+
+// Charge Pump (if supported)
+const uint16_t SET_CHARGE_PUMP                    = 0x8D;
+
+// Read-Modify-Write
+const uint16_t READ_MODIFY_WRITE_START            = 0xE0;
+const uint16_t READ_MODIFY_WRITE_END              = 0xEE;

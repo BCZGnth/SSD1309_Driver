@@ -94,7 +94,7 @@ void ssd_write(size_t data_length){
 #endif // I2C_WRITE_PROTECTION
 
 
-/*
+/**
  * @brief Load the setup bytes and the data into the i2c buffer
  *
  * @param Screen: of type ScreenDefines. The structure that holds the relevant screen attributes
