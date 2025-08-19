@@ -18,7 +18,8 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
     ADD_TO_STACK_DEPTH(); // ssd1309_send_command
     level_log(TRACE, "Sending command: %X", command);
 
-    uint8_t tmp, i, n_o_args, cmd;
+    uint8_t tmp, i, n_o_args, cmd, j;
+    j = 0;
 
     n_o_args = (command >> 8) & 0xFF;
     cmd = command & 0xFF;
