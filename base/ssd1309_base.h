@@ -69,9 +69,12 @@ typedef struct {
     unsigned int buffer_size;
 
     uint8_t* startup_buffer;
-    uint8_t startup_size;
+    uint8_t  startup_size;
 
-    uint8_t i2c_address;
+    uint8_t  i2c_address;
+
+    uint8_t* rst_lat_port;
+    uint8_t  rst_pin;
 
     Ssd1309RamPointer zeroed_ram_ptr;
 

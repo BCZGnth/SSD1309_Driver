@@ -85,6 +85,10 @@ void ssd1309_startup(ScreenDefines Screen)
 {
     ADD_TO_STACK_DEPTH(); // ssd1309_startup
     level_log(TRACE, "Starting up the SSD1309");
+
+    // The Sd1309 needs to be reset before it will accept any I2C communications
+    ssd1309_reset(Screen);
+
     size_t size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), Screen.offset.control, Screen.startup_buffer, Screen.startup_size);
     ssd_write(Screen, size);
 
@@ -97,9 +101,22 @@ void ssd1309_startup(ScreenDefines Screen)
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_startup
 }
 
+void ssd1309_reset(ScreenDefines Screen){
+    /* Reset the SSD1309 */
+    // SCREEN_RST_SetHigh();
+    *(Screen.rst_lat_port) |= (1 << Screen.rst_pin);
+    __delay_ms(100);
+    // SCREEN_RST_SetLow();
+    *(Screen.rst_lat_port) &= !(1 << Screen.rst_pin);
+    __delay_ms(3);
+    // SCREEN_RST_SetHigh();
+    *(Screen.rst_lat_port) |= (1 << Screen.rst_pin);
+    /* End of reset */
+}
+
 
 /* ssd1309 Needs to be called before anything else is called so that the i2c buffer pointer is defined */
-extern uint8_t ascii_font[310]; // Don't know if this is a good way to code or if I should re-arrange the file include order.
+extern uint8_t ascii_font[1]; // Don't know if this is a good way to code or if I should re-arrange the file include order.
 
 
 /**
@@ -117,7 +134,7 @@ extern uint8_t ascii_font[310]; // Don't know if this is a good way to code or i
  *      ssd1309_cls
  *          Writes all zeros to the GDDRAM
  */
-Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t screen_i2c_address){
+Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
 
     Ssd1309Defines Screen = {
 
@@ -129,6 +146,8 @@ Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8
             .startup_buffer = (&ssd1309_startup_sequence),
             .startup_size = (sizeof(ssd1309_startup_sequence) / sizeof(ssd1309_startup_sequence[0])),
             .i2c_address = screen_i2c_address,
+            .rst_lat_port = rst_lat_port,
+            .rst_pin = rst_pin,
 
             .offset = {
                 .pfont = (&ascii_font[0]),
