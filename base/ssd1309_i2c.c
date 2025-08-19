@@ -105,10 +105,13 @@ void ssd_write(size_t data_length){
  * 
  */
 size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setup_length, uint8_t * pdata, size_t data_length) {
-
     ADD_TO_STACK_DEPTH(); // load_i2c_buffer
 
     level_log(TRACE, "SSD1309: Loading the I2C Buffer");
+
+    if((setup_length + data_length) > Screen.buffer_size){
+        level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");
+    }
     /* Loading the setup bytes into the buffer */
     memcpy(Screen.pbuffer, psetup_bytes, setup_length);
     
