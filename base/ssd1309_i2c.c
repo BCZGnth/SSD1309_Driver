@@ -108,17 +108,6 @@ size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setu
     ADD_TO_STACK_DEPTH(); // load_i2c_buffer
 
     level_log(TRACE, "SSD1309: Loading the I2C Buffer");
-
-    Screen.pbuffer = malloc(setup_length + data_length);
-    if(!Screen.pbuffer){
-        level_log(ERROR, "Memory Allocation for the I2C buffer failed");
-        REMOVE_FROM_STACK_DEPTH();
-        return 0;
-    }
-
-    /* If we have allocated the memory store the size of the buffer */
-    Screen.buffer_size = (int)(setup_length + data_length);
-
     /* Loading the setup bytes into the buffer */
     memcpy(Screen.pbuffer, psetup_bytes, setup_length);
 
