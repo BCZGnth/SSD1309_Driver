@@ -126,6 +126,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
     level_log(TRACE, "Loading the I2C buffer with the numeric characters", args.data);
+    if((number_of_chars_written * Screen.character.width_pad) > Screen.buffer_size) level_log(ERROR, "Cannot write more than %d bytes to the I2C buffer", Screen.buffer_size);
     for (n = 0; n < number_of_chars_written; n++)
     { // Iterate through all of the characters in the string
 
@@ -152,7 +153,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     }
 
     ssd_write(Screen, (args.constrained_length * Screen.character.width_pad)); // The number of bytes to write to the i2c buffer is the number of characters multiplied by the width of each character (5) plus the padding (1 byte) between each character
- 
+
     free(data_to_write); // Free the allocated memory for data_to_write
     data_to_write = NULL; // Set the pointer to NULL to avoid dangling pointers
     level_log(TRACE, "SSD1309: Done Writing Number");
@@ -168,8 +169,15 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
  * @brief A function to print a string on the screen
  */
 size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
+
+    /* Error Checks */
+    // Length is zero
     if(!args.length) {
         level_log(ERROR, "type <Ssd1309Print> args.length not defined");
+    }
+    // If the bytes length will be larger than the buffer size
+    if((args.length * Screen.character.width_pad * (args.scale * args.scale) + Screen.offset.control) >  Screen.buffer_size) {
+        level_log(ERROR, "Cannot write more than %d bytes to the I2C buffer", Screen.buffer_size);
     }
 
     ADD_TO_STACK_DEPTH(); // ssd1309_print
@@ -186,8 +194,8 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     char message_chars[128];
     memcpy(&message_chars, args.text, args.length);
 
-    memset(Screen.pbuffer, 0, 722);
-    // memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1); // Not a useful line since it gets overwritten anyway... put it where it won't
+    memset(Screen.pbuffer, 0, Screen.buffer_size);
+    // memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1); // Not a useful line since it gets overwritten anyway... put it where it won't get overwritten
     level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
 
     /** Loading the I2C buffer */
@@ -247,7 +255,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
                     tmp[1] = (tmp16 >> 8);
                     tmp[0] = (tmp16 & 0xff);
 
-                    memcpy(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column ), &(tmp[0]), args.scale);
+                    memcpy(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column ),                &(tmp[0]), args.scale);
                     memcpy(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column + column_offset), &(tmp[0]), args.scale);
 
                     // memset(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column ), tmp[0], 1); // Write the scaled byte to the i2c buffer

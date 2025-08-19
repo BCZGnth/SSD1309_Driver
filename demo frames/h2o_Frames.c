@@ -57,5 +57,5 @@ void h2o_rectangular_frames(ScreenDefines Screen) {
     ssd1309_draw_rect(Screen, other_other_half_screen_outline);
     ssd1309_print(Screen, h2o);
     ssd1309_print(Screen, connected);
-    ssd1306_draw_rect(Screen, underscore);
+    ssd1309_draw_hline(Screen, underscore);
 }
