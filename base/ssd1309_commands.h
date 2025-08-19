@@ -8,7 +8,8 @@
 void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...);
 void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args);
 void ssd1309_startup(ScreenDefines Screen);
-Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t i2c_address);
+void ssd1309_reset(ScreenDefines Screen);
+Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin);
 extern void ssd1309_cls(ScreenDefines Screen);
 
 

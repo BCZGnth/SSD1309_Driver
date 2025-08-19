@@ -77,10 +77,10 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HLine Line){
 
     // One can only start at the top of a page, so the page will need to be set as well as the first and last bytes of the line 
     uint8_t page = Line.ystart / 8; // There are 8 pages
-    if((Line.ystart % 8) != 0) { page += 1; }
+    // if((Line.ystart % 8) != 0) { page += 1; }
 
     Ssd1309RamPointer ram_ptr = {
-        .page = page - 1,
+        .page = page,
         .position = Line.xstart
     };
     ssd1309_set_ram_pointer(Screen, ram_ptr);
@@ -109,7 +109,7 @@ void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){
 
     uint8_t hlength = (Rect.xend - Rect.xstart - 1);
     uint8_t hxstart = Rect.xstart + 1;
-    uint8_t vlength = (Rect.yend - Rect.ystart);
+    uint8_t vlength = (Rect.yend - Rect.ystart + 1);
 
     Ssd1309HLine hline1 = {
         .xstart = hxstart,
