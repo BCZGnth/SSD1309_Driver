@@ -93,7 +93,7 @@ const uint16_t SET_DISPLAY_OFFSET = 0x01D3;  // Set Display offset
 const uint8_t NO_OFFSET = 0x00;              //      no display offset
 
 
-const uint8_t ssd1309_startup_length = 26;
+const uint8_t ssd1309_startup_length = 23;
 
 const uint8_t ssd1309_startup_sequence[23] = {
     0xAE,   // Display OFF

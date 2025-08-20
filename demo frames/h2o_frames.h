@@ -3,3 +3,4 @@
 #include <stdio.h>
 
 void h2o_rectangular_frames(ScreenDefines Screen);
+void h2o_outline(ScreenDefines Screen);
