@@ -35,7 +35,7 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
         va_start (ap, 1);
         for(i=0; i<n_o_args; i++){
             tmp = va_arg (ap, uint8_t);
-            if((i + 2) > Screen.buffer_size) level_log(ERROR, "Cannot write more than %d bytes to the I2C buffer", Screen.buffer_size);
+            if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");}
             memcpy(Screen.pbuffer + i + 2, &tmp, 1);
         }
         va_end (ap);

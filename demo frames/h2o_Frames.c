@@ -1,4 +1,5 @@
 #include "h2o_frames.h"
+#include "ssd1309.h"
 
 void h2o_rectangular_frames(ScreenDefines Screen) {
 
@@ -45,7 +46,7 @@ void h2o_rectangular_frames(ScreenDefines Screen) {
         .delay = 1
     };
 
-    Ssd1309HLine underscore = {
+    Ssd1309HVLine underscore = {
         .xstart = 3,
         .ystart = 25,
         .length = 54
@@ -58,4 +59,28 @@ void h2o_rectangular_frames(ScreenDefines Screen) {
     ssd1309_print(Screen, h2o);
     ssd1309_print(Screen, connected);
     ssd1309_draw_hline(Screen, underscore);
+}
+
+void h2o_outline(ScreenDefines Screen) {
+
+    Ssd1309Print h2o_connected = {
+        .text = "H2O Connected",
+        .length = 13,
+        .ram_ptr = {
+            .position = 24,
+            .page = 2
+        },
+        .scale = 1,
+        .delay = 1
+    };
+
+    Ssd1309Rect full_outline = {
+        .xstart = 0,
+        .xend = 127,
+        .ystart = 0,
+        .yend = 63
+    };
+
+    ssd1309_draw_rect(Screen, full_outline);
+    ssd1309_print(Screen, h2o_connected);
 }

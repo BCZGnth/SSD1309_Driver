@@ -187,13 +187,7 @@ typedef struct {
     uint8_t xstart;
     uint8_t ystart;
     uint8_t length;
-} Ssd1309VLine;
-
-typedef struct {
-    uint8_t xstart;
-    uint8_t ystart;
-    uint8_t length;
-} Ssd1309HLine;
+} Ssd1309HVLine;
 
 typedef struct {
     uint8_t xstart;

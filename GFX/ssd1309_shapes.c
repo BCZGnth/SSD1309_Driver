@@ -1,10 +1,17 @@
 #include "ssd1309_shapes.h"
 #include "system.h"
+#include "logger.h"
 #include <string.h>
 /**
  * Takes a start x,y coordinate and a length of pixels to draw a line
  */
-void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309VLine Line){
+void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
+
+    ADD_TO_STACK_DEPTH();
+    level_log(TRACE, "SSD1309 Draw VLine");
+
+    if(((Line.length / 8) + 3) > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING);
 
     // There are only 128 columns on the screen hence the bit-mask
@@ -23,7 +30,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309VLine Line){
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, page, page_end);
 
     // This is our counter variable to keep track of bytes written to the display
-    uint8_t j = 0;
+    int j = 0;
 
     // Fill the useful part of the i2c buffer with zeros
     memset(Screen.pbuffer, 0, 10);
@@ -49,6 +56,10 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309VLine Line){
     while(Line.length / 8) {
         memset(Screen.pbuffer + j++, 0xff, 1);
         Line.length -= 8;
+
+        // Debug
+        if(j > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+        
     }
 
     // Last Byte:
@@ -62,14 +73,23 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309VLine Line){
     }
 
 
-    uint8_t length = j;
-
+    int length = j;
+    
     ssd_write(Screen, length);
 
     ssd1309_reset_addressing(Screen);
+
+    level_log(TRACE, "SSD1309 Drew VLine");
+    REMOVE_FROM_STACK_DEPTH();
 }
 
-void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HLine Line){
+void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
+
+    ADD_TO_STACK_DEPTH();
+    level_log(TRACE, "SSD1309 Draw HLine");
+
+    if((Line.length + Screen.offset.control) > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, PAGE_ADDRESSING);
 
     // There are only 128 columns on the screen hence the bit-mask
@@ -102,34 +122,39 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HLine Line){
     ssd_write(Screen, Line.length + 1);
 
     ssd1309_reset_addressing(Screen);
+
+    level_log(TRACE, "SSD1309 Drew HLine");
+    REMOVE_FROM_STACK_DEPTH();
 }
 
 void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){
     // ssd1309_send_command(Screen, SET_DISPLAY_ON_OUTPUT_IGNORES_RAM_CONTENT);
+    ADD_TO_STACK_DEPTH();
+    level_log(TRACE, "SSD1309 Draw Rectangle");
 
     uint8_t hlength = (Rect.xend - Rect.xstart - 1);
     uint8_t hxstart = Rect.xstart + 1;
     uint8_t vlength = (Rect.yend - Rect.ystart + 1);
 
-    Ssd1309HLine hline1 = {
+    Ssd1309HVLine hline1 = {
         .xstart = hxstart,
         .ystart = Rect.ystart,
         .length = hlength
     };
 
-    Ssd1309VLine vline1 = {
+    Ssd1309HVLine vline1 = {
         .xstart = Rect.xstart,
         .ystart = Rect.ystart,
         .length = vlength
     };
 
-    Ssd1309HLine hline2 = {
+    Ssd1309HVLine hline2 = {
         .xstart = hxstart,
         .ystart = Rect.yend,
         .length = hlength
     };
 
-    Ssd1309VLine vline2 = {
+    Ssd1309HVLine vline2 = {
         .xstart = Rect.xend,
         .ystart = Rect.ystart,
         .length = vlength
@@ -141,5 +166,7 @@ void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){
     ssd1309_draw_hline(Screen, hline2);
 
     // ssd1309_send_command(Screen, SET_DISPLAY_ON_RESUME_RAM_CONTENT_DISPLAY);
+    level_log(TRACE, "SSD1309 Drew Rectangle");
+    REMOVE_FROM_STACK_DEPTH();
 }
 
