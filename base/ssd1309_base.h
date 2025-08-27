@@ -10,8 +10,8 @@
 const uint8_t SSD1309_COMMAND_BYTE = 0x00;
 const uint8_t SSD1309_RAM_WRITE_BYTE = 0x40;
 
-#warning SSD1309: The device address can be 0x78 or 0x79 depending on whether th D/C pin is low or high
-const uint8_t SSD1309_ADDRESS = 0x78;
+// #warning SSD1309: The device address can be 0x78 or 0x79 depending on whether th D/C pin is low or high
+// const uint8_t SSD1309_ADDRESS = 0x78;
 
 
 // uint8_t SSD1309_I2C_BUFFER[129]; // This is the buffer that will be used to send data to the SSD1309 screen.
@@ -62,11 +62,11 @@ typedef struct {
  * This is the main structure used in data transmission to the screen.
  * */
 typedef struct {
-    uint8_t ScreenHeight;
-    uint8_t ScreenWidth;
+    uint8_t  ScreenHeight;
+    uint8_t  ScreenWidth;
 
     uint8_t* pbuffer;
-    unsigned int buffer_size;
+    int      buffer_size;
 
     uint8_t* startup_buffer;
     uint8_t  startup_size;

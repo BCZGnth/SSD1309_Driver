@@ -65,7 +65,7 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
     
     uint8_t msg[3] = {(args.page | 0xB0), msb_column, lsb_column};
 
-    size_t size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), control_length, (&msg[0]), data_length);
+    size_t size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), control_length, (&msg[0]), data_length);
 
     ssd_write(Screen, size);
 
@@ -74,7 +74,7 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
 
 }
 
-ssd1309_reset_addressing(ScreenDefines Screen){
+void ssd1309_reset_addressing(ScreenDefines Screen){
     ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, 0, 127);
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0, 7);
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, HORIZONTAL_ADDRESSING);
@@ -91,12 +91,12 @@ void ssd1309_startup(ScreenDefines Screen)
     // The Sd1309 needs to be reset before it will accept any I2C communications
     ssd1309_reset(Screen);
 
-    size_t size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), Screen.offset.control, Screen.startup_buffer, Screen.startup_size);
+    size_t size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), Screen.offset.control, Screen.startup_buffer, Screen.startup_size);
     ssd_write(Screen, size);
 
     ssd1309_cls(Screen);
 
-    size = load_i2c_buffer(Screen, (&SSD1309_COMMAND_BYTE), Screen.offset.control, &initializer, initializer_length);
+    size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), Screen.offset.control, (uint8_t*)initializer, initializer_length);
     ssd_write(Screen, size);
 
     level_log(TRACE, "SSD1309: Startup Sequence Done");
@@ -136,16 +136,16 @@ extern uint8_t ascii_font[1]; // Don't know if this is a good way to code or if 
  *      ssd1309_cls
  *          Writes all zeros to the GDDRAM
  */
-Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
+Ssd1309Defines ssd1309_init(uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
 
     Ssd1309Defines Screen = {
 
         .Screen = {
             .ScreenHeight = 64,
             .ScreenWidth = 128,
-            .pbuffer = i2c_buffer,
-            .buffer_size = buffer_size,
-            .startup_buffer = (&ssd1309_startup_sequence),
+            .pbuffer = NULL,
+            .buffer_size = -1,
+            .startup_buffer = (uint8_t*)(ssd1309_startup_sequence),
             .startup_size = (sizeof(ssd1309_startup_sequence) / sizeof(ssd1309_startup_sequence[0])),
             .i2c_address = screen_i2c_address,
             .rst_lat_port = rst_lat_port,
