@@ -2,6 +2,7 @@
 #include "system.h"
 #include "logger.h"
 #include <string.h>
+#include <stdlib.h>
 /**
  * Takes a start x,y coordinate and a length of pixels to draw a line
  */
