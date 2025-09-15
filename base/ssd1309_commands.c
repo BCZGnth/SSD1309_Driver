@@ -109,7 +109,7 @@ void ssd1309_reset(ScreenDefines Screen){
     *(Screen.rst_lat_port) |= (1 << Screen.rst_pin);
     __delay_ms(100);
     // SCREEN_RST_SetLow();
-    *(Screen.rst_lat_port) &= !(1 << Screen.rst_pin);
+    *(Screen.rst_lat_port) &= ~(1 << Screen.rst_pin);
     __delay_ms(3);
     // SCREEN_RST_SetHigh();
     *(Screen.rst_lat_port) |= (1 << Screen.rst_pin);
