@@ -74,7 +74,7 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
 
 }
 
-ssd1309_reset_addressing(ScreenDefines Screen){
+void ssd1309_reset_addressing(ScreenDefines Screen){
     ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, 0, 127);
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0, 7);
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, HORIZONTAL_ADDRESSING);
