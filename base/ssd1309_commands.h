@@ -10,25 +10,19 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args);
 void ssd1309_startup(ScreenDefines Screen);
 void ssd1309_reset(ScreenDefines Screen);
 void ssd1309_reset_addressing(ScreenDefines Screen);
-Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, unsigned int buffer_size, uint8_t i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin);
+Ssd1309Defines ssd1309_init(uint8_t *i2c_buffer, unsigned int buffer_size, uint8_t i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin);
 extern void ssd1309_cls(ScreenDefines Screen);
 
 
 /* COMMANDS */
 const uint16_t SET_DISPLAY_ON_RESUME_RAM_CONTENT_DISPLAY = 0x00A4;  // Entire Display ON; resume RAM content display
 const uint16_t SET_DISPLAY_ON_OUTPUT_IGNORES_RAM_CONTENT = 0x00A5;
-
 const uint16_t SET_DISPLAY_NORMAL = 0x00A6;  // Set normal/inverse display: Normal
-const uint16_t SET_DISPLAY_INVERSE = 0x00A7;  // Set normal/inverse display: Inverse
-
 const uint16_t SET_SCROLL_INACTIVE = 0x002E;  // Deactivate Scroll
-
-const uint16_t SET_DISPLAY_OFF = 0x00AE;
 const uint16_t SET_DISPLAY_ON = 0x00AF;  // dISPLAY ON in normal mode
-
 const uint16_t SET_COLUMN_LSB_0 = 0x0007;  // Set Lower Columnm start address to 0
 const uint16_t SET_COLUMN_MSB_4 = 0x0015;  // Set Higher Column start address to 4
-
+const uint16_t SET_DISPLAY_OFF = 0x00AE;  // Display OFF  
 const uint16_t SET_SEGMENT_REMAP = 0x00A1;  // Set segment re-map COL 127 mapped to SEG 0 (A0 sets normal addressing)
 const uint16_t SET_COM_SCAN_DIRECTION = 0x00C8;  // Set COM output scan direction: Scan from COM[n-1] to COM[0]
 const uint16_t SET_DISPLAY_START_LINE = 0x0040;                    //      Set Display start line
@@ -105,7 +99,7 @@ const uint8_t ssd1309_startup_length = 23;
 const uint8_t ssd1309_startup_sequence[23] = {
     0xAE,   // Display OFF
     0xD5,   // Set Display clock divide ratio/oscillator frequency
-        0xF0,   //    High oscilator value, divide by 2
+    0x80,   //    Default freq and divide ratio
     0xA8,   // Set multiplex ratio
     0x3F,   //    1/64 duty
     0xD3,   // Set display offset
@@ -118,11 +112,11 @@ const uint8_t ssd1309_startup_sequence[23] = {
     0xA1,   // Set segment re-map (A0 = normal, A1 = flipped)
     0xC8,   // Set COM output scan direction
     0xDA,   // Set COM pins hardware configuration
-        0x02,   //    Alternative COM pin config, disable COM left/right remap
+    0x12,   //    Alternative COM pin config, disable COM left/right remap
     0x81,   // Set contrast control
     0xCF,   //    Reasonable contrast
     0xD9,   // Set pre-charge period
-        0xF3,   //    Pre-charge and discharge times
+    0xF1,   //    Pre-charge and discharge times
     0xDB,   // Set VCOMH deselect level
     0x40,   //    ~0.77 × Vcc
 };
