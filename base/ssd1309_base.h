@@ -10,7 +10,7 @@
 const uint8_t SSD1309_COMMAND_BYTE = 0x00;
 const uint8_t SSD1309_RAM_WRITE_BYTE = 0x40;
 
-#warning SSD1309: The device address can be 0x78 or 0x79 depending on whether th D/C pin is low or high
+#warning SSD1309: The device address can be 0x3c or 0x3d depending on whether th D/C pin is low or high
 const uint8_t SSD1309_ADDRESS = 0x3c;
 
 
