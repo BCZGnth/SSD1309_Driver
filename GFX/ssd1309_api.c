@@ -106,15 +106,6 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     ADD_TO_STACK_DEPTH(); // ssd1309_write_number
     level_log(TRACE, "Writing Number: %d", args.data);
-
-    Screen.buffer_size = args.constrained_length * Screen.character.width_pad;
-
-    Screen.pbuffer = malloc((size_t)Screen.buffer_size);
-    if(!Screen.pbuffer){
-        level_log(ERROR, "Memory Allocation Failed for the I2C buffer");
-        REMOVE_FROM_STACK_DEPTH();
-        return 0;
-    }
     
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
