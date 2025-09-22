@@ -174,7 +174,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     /* Error Checks */
     // Length is zero
     if(!args.length) {
-        level_log(ERROR, "type <Ssd1309Print> args.length not defined");
+        level_log(ERROR, "type <Ssd1309Print> Ssd1309Print::length not defined");
     }
     // If the bytes length will be larger than the buffer size
     if((args.length * Screen.character.width_pad * (args.scale * args.scale) + Screen.offset.control) >  Screen.buffer_size) {

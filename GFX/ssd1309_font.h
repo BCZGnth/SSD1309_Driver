@@ -5,7 +5,7 @@
 #include "ssd1309_commands.h"
 
 // uint8_t* pfont = &font;
-const uint16_t scale_lut[256];
+// const uint16_t scale_lut[256];
 
 FontOffset offset;
 CharAttributes character;
