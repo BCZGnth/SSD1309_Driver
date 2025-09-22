@@ -144,7 +144,7 @@ Ssd1309Defines ssd1309_init(uint8_t screen_i2c_address, uint8_t* rst_lat_port, u
             .ScreenHeight = 64,
             .ScreenWidth = 128,
             .pbuffer = NULL,
-            .buffer_size = -1,
+            .buffer_size = buffer_size,
             .startup_buffer = (uint8_t*)(ssd1309_startup_sequence),
             .startup_size = (sizeof(ssd1309_startup_sequence) / sizeof(ssd1309_startup_sequence[0])),
             .i2c_address = screen_i2c_address,

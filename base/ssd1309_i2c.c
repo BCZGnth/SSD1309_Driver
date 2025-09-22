@@ -117,9 +117,6 @@ size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setu
     level_log(TRACE, "SSD1309: I2C Buffer Loaded");
     REMOVE_FROM_STACK_DEPTH(); // load_i2c_buffer   
 
-    free(Screen.pbuffer);
-    Screen.buffer_size = 0;
-
     return setup_length + data_length;
 }
 

@@ -166,9 +166,6 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     level_log(TRACE, "SSD1309: Done Writing Number");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_write_number
 
-    free(Screen.pbuffer);
-    Screen.pbuffer = NULL;
-
     return args.constrained_length * 6;
 }
 
@@ -404,9 +401,6 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_print
 
-    free(Screen.pbuffer);
-    Screen.pbuffer = NULL;
-
     return (args.length * 6);
 }
 
@@ -438,8 +432,6 @@ void ssd1309_cls(ScreenDefines Screen) {
     level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
 
-    free(Screen.pbuffer);
-    Screen.pbuffer = NULL;
 }
 
 
@@ -472,8 +464,6 @@ void ssd1309_clear_line(ScreenDefines Screen, Ssd1309ClearLine args)
     level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
 
-    free(Screen.pbuffer);
-    Screen.pbuffer = NULL;
 }
 
 // void ssd1309_clear_block(ScreenDefines Screen, Ssd1309ClearBlock args)
