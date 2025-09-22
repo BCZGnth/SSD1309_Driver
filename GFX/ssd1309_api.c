@@ -32,7 +32,9 @@ void ssd1309_write_bitmap(ScreenDefines Screen, Ssd1309WriteBitmap args) {
     ssd1309_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 }
 
-/***
+
+
+/**
  * @brief A function to set the ram pointer to a position on the  (Dependent on the addressing mode)
  *
  * @param x_start defines the LEFT-most bit (pixel) or 8-bit page (if in page addressing mode)
@@ -51,6 +53,8 @@ Each page has a capacity of 21 full characters. There are 8 pages,
 so that gives us 168 characters at the max that the display can
 print at one time.
 */
+
+
 
 /**
  * @brief This function prints characters right justified. That means that you can only print as many characters as
@@ -169,6 +173,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     return args.constrained_length * 6;
 }
 
+
 /**
  * @param     Screen: the screenDefines structure that general screen definitions
  * @param     args: the Ssd1309WriteNumber struct that holds the specific paramaters for writing a number to the screen 
@@ -181,10 +186,12 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     // Length is zero
     if(!args.length) {
         level_log(ERROR, "type <Ssd1309Print> args.length not defined");
+        return 0;
     }
     // If the bytes length will be larger than the buffer size
     if((args.length * Screen.character.width_pad * (args.scale * args.scale) + Screen.offset.control) >  Screen.buffer_size) {
         level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");
+        return 0;
     }
 
     ADD_TO_STACK_DEPTH(); // ssd1309_print
