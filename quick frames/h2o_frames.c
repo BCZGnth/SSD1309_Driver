@@ -84,3 +84,34 @@ void h2o_outline(ScreenDefines Screen) {
     ssd1309_draw_rect(Screen, full_outline);
     ssd1309_print(Screen, h2o_connected);
 }
+
+void generic_payload_frame(ScreenDefines Screen)
+{
+    Ssd1309Rect full_outline = {
+        .xstart = 0,
+        .xend = 127,
+        .ystart = 0,
+        .yend = 63
+    };
+
+    Ssd1309Print SerNUM = {
+        .text = "Ser #:",
+        .length = 6,
+        .ram_ptr = {
+            .page = 2,
+            .position = 3
+        },
+        .scale = 1,
+        .delay = 0
+    };
+
+    Ssd1309HVLine ser_num_underline = {
+        .ystart = 18,
+        .xstart = 41,
+        .length = 50
+    };
+
+    ssd1309_draw_rect( Screen, full_outline);
+    ssd1309_print(     Screen, SerNUM);
+    ssd1309_draw_hline(Screen, ser_num_underline);
+}

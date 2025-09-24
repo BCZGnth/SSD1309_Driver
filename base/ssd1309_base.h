@@ -25,14 +25,14 @@ const uint8_t SSD1309_RAM_WRITE_BYTE = 0x40;
  * 
  * Ssd1309RamPointer
  */
-typedef struct {
+typedef struct unusedCommandLengths{
     uint8_t set_ram_pointer;
     uint8_t send_command;
     uint8_t startup;
     uint8_t init;
 } Ssd1309CommandLengths;
 
-typedef struct {
+typedef struct CursorPointer{
     uint8_t page;
     uint8_t position;
 } Ssd1309RamPointer;
@@ -43,13 +43,13 @@ typedef struct {
  * FontOffset: 
  * CharAttributes: 
  */
-typedef struct {
+typedef struct Font_ByteOffset{
     uint8_t* pfont;
     uint8_t ascii;
     uint8_t control;
 } FontOffset;
 
-typedef struct {
+typedef struct CharacterAttributes{
     uint8_t width;
     uint8_t height;
     uint8_t pad;
@@ -61,7 +61,7 @@ typedef struct {
  * 
  * This is the main structure used in data transmission to the screen.
  * */
-typedef struct {
+typedef struct ScreenMetaData{
     uint8_t  ScreenHeight;
     uint8_t  ScreenWidth;
 
@@ -110,7 +110,7 @@ typedef struct {
  * ScreenStringPerLine
  */
 
-typedef struct {
+typedef struct ScreenString{
     uint8_t line_length;
     char* line0;
     char* line1;
@@ -122,7 +122,7 @@ typedef struct {
     char* line7;
 } ScreenStringPerLine;
 
-typedef struct {
+typedef struct WriteNumber{
     int data;
     uint8_t constrained_length; // make a maximum number of characters that can be printed. (neede to right align the characters.)
     uint8_t right_align;
@@ -131,7 +131,7 @@ typedef struct {
     Ssd1309RamPointer ram_ptr;
 } Ssd1309WriteNumber;
 
-typedef struct {
+typedef struct Print{
     const char * text;
     uint8_t      length;
     uint8_t      delay;
@@ -141,7 +141,7 @@ typedef struct {
 } Ssd1309Print;
 
 /* A combination of the Print and Write number structures */
-typedef struct {
+typedef struct Prnt{
     const char * text;
     int          data;
     uint8_t      msg_length;
@@ -153,7 +153,7 @@ typedef struct {
     Ssd1309RamPointer ram_ptr;
 } Ssd1309Prnt;
 
-typedef struct {
+typedef struct WriteBitmap{
     uint8_t * pbitmap;
     uint8_t   length;
     uint8_t   xstart;
@@ -164,39 +164,39 @@ typedef struct {
     Ssd1309RamPointer ram_ptr;
 } Ssd1309WriteBitmap;
 
-typedef struct {
+typedef struct Cursor{
     uint8_t repeats;
 
     Ssd1309RamPointer ram_ptr;
 } Ssd1309Cursor;
 
-typedef struct {
+typedef struct RamWrite{
     uint8_t* bitmap;
     uint8_t bitmap_length;
 
     Ssd1309RamPointer ram_ptr;
 } Ssd1309RamWrite;
 
-typedef struct {
+typedef struct ClearLine{
     uint8_t start_page;
     uint8_t end_page;
 
 } Ssd1309ClearLine;
 
-typedef struct {
+typedef struct HVLine{
     uint8_t xstart;
     uint8_t ystart;
     uint8_t length;
 } Ssd1309HVLine;
 
-typedef struct {
+typedef struct Rect{
     uint8_t xstart;
     uint8_t ystart;
     uint8_t xend;
     uint8_t yend;
 } Ssd1309Rect;
 
-typedef struct {
+typedef struct GeneralScreenStruct{
     ScreenDefines Screen;
     Ssd1309WriteNumber write_number;
     Ssd1309Print print;

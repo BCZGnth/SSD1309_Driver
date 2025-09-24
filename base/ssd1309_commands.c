@@ -136,7 +136,7 @@ extern uint8_t ascii_font[1]; // Don't know if this is a good way to code or if 
  *      ssd1309_cls
  *          Writes all zeros to the GDDRAM
  */
-Ssd1309Defines ssd1309_init(uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
+Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, int buffer_size, uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
 
     Ssd1309Defines Screen = {
 
