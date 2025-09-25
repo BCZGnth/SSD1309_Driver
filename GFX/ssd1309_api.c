@@ -19,7 +19,8 @@ void ssd1309_write_bitmap(ScreenDefines Screen, Ssd1309WriteBitmap args) {
     // if( (args.ystart > args.yend) || (args.ystart > 128)) return;
 
     /** Set RAM pointer constraints based on x and y values given */
-    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, HORIZONTAL_ADDRESSING);
+    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING
+    );
     ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, args.xstart, args.xend);
 
     /** For now there is no deciding how to pad/ write odd size bitmaps. I hope your bitmap has a height multiple of 8...*/
