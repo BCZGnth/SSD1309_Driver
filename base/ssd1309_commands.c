@@ -28,18 +28,18 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
     memcpy(Screen.pbuffer + 1, &cmd, 1);
 
 
-    if(n_o_args){
+    // if(n_o_args){
 
-        va_list ap;
+    //     va_list ap;
 
-        va_start (ap, 1);
-        for(i=0; i<n_o_args; i++){
-            tmp = va_arg (ap, uint8_t);
-            if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");}
-            memcpy(Screen.pbuffer + i + 2, &tmp, 1);
-        }
-        va_end (ap);
-    }
+    //     va_start (ap, 1);
+    //     for(i=0; i<n_o_args; i++){
+    //         tmp = va_arg (ap, uint8_t);
+    //         if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");}
+    //         memcpy(Screen.pbuffer + i + 2, &tmp, 1);
+    //     }
+    //     va_end (ap);
+    // }
 
     ssd_write(Screen, n_o_args + 2);
 
@@ -136,7 +136,7 @@ extern uint8_t ascii_font[1]; // Don't know if this is a good way to code or if 
  *      ssd1309_cls
  *          Writes all zeros to the GDDRAM
  */
-Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, int buffer_size, uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
+Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, size_t buffer_size, uint8_t screen_i2c_address, uint8_t* rst_lat_port, uint8_t rst_pin){
 
     Ssd1309Defines Screen = {
 

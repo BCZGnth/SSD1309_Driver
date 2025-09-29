@@ -23,7 +23,7 @@ void screen_demo(Ssd1309Defines OLED){
     ssd1309_blinking_cursor(OLED.Screen, OLED.cursor);
     level_log(TRACE, "Done Blinking Cursor");
 
-    for(int i = 0; i < 8; i++) {
+    for(uint8_t i = 0; i < 8; i++) {
         OLED.print.text = "Line: ",
         OLED.print.length = 6;
         OLED.print.delay = TRUE;

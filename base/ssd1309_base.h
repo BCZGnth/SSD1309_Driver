@@ -66,7 +66,7 @@ typedef struct ScreenMetaData{
     uint8_t  ScreenWidth;
 
     uint8_t* pbuffer;
-    int      buffer_size;
+    size_t   buffer_size;
 
     uint8_t* startup_buffer;
     uint8_t  startup_size;

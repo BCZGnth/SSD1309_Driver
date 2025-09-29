@@ -24,7 +24,7 @@ uint8_t reverse_bits(uint8_t byte);
  * @return the scaled byte
  * 
  */
-uint16_t scale_byte(uint8_t input);
+// uint16_t scale_byte(uint8_t input);
 
 /* 
  * @brief a function that calculates the location of a character in the font array provided that the character is in the font
@@ -32,7 +32,7 @@ uint16_t scale_byte(uint8_t input);
  * @param character: the character to be searched for in the font array
  * @return a pointer to the location of the character in the font array
  */
-uint8_t* get_font_pointer(uint8_t character);
+// uint8_t* get_font_pointer(uint8_t character);
 
 /*
  * @brief the useful ascii symbols and letters in an 8x5 pixel format. the Space character is the first character which is indexed at 0x20 (32 decimal)

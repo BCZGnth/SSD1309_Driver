@@ -43,11 +43,11 @@ void ssd1309_write_bitmap(ScreenDefines Screen, Ssd1309WriteBitmap args) {
  * @param y_start defines the TOP-most bit (pixel) or 8-bit page (if in page addressing mode)
  * @param y_end Not Implemented. For advanced box defining that will come in handy when writing text to the screen
  */
-void ssd1309_ramWrite(ScreenDefines Screen, Ssd1309RamWrite args) {
-    size_t size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_RAM_WRITE_BYTE), 1, args.bitmap,  args.bitmap_length);
+// void ssd1309_ramWrite(ScreenDefines Screen, Ssd1309RamWrite args) {
+//     size_t size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_RAM_WRITE_BYTE), 1, args.bitmap,  args.bitmap_length);
 
-    ssd_write(Screen, size);
-}
+//     ssd_write(Screen, size);
+// }
 
 /**
 Each page has a capacity of 21 full characters. There are 8 pages,
@@ -112,7 +112,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     uint8_t n;
     uint8_t number_of_chars_written; // the snprintf function actually returns an integer value, but I hope that the amount of characters will never exceed 256...
-    uint8_t* data_to_write = malloc(168); // 168 bytes can hold the max number of characters that can be displayed on the screen
+    char* data_to_write = malloc(168); // 168 bytes can hold the max number of characters that can be displayed on the screen
     
     if (data_to_write == NULL)
     {
@@ -120,7 +120,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
         return 0;
     }
 
-    number_of_chars_written = ((size_t)snprintf((char*)(data_to_write), 128, "%u", args.data)); // putting zeros at the end of the string so that it is less noise to the viewer
+    number_of_chars_written = snprintf((data_to_write), 128, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
 
     uint8_t right_align_character_offset = (args.constrained_length - number_of_chars_written) * 6;
 

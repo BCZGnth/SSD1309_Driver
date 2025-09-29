@@ -10,7 +10,7 @@
 #endif
 
 void   ssd1309_write_bitmap(ScreenDefines Screen, Ssd1309WriteBitmap);
-void   ssd1309_ramWrite(ScreenDefines Screen, Ssd1309RamWrite args);
+// void   ssd1309_ramWrite(ScreenDefines Screen, Ssd1309RamWrite args);
 size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args);
 void   ssd1309_cls(ScreenDefines Screen);
 void   ssd1309_clear_line(ScreenDefines Screen, Ssd1309ClearLine args);

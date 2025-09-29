@@ -81,7 +81,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
     }
 
 
-    size_t length = j;
+    size_t length = (size_t)abs(j);
     
     ssd_write(Screen, length);
 
@@ -133,7 +133,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
 
     // to set a single bit in the byte in order to write the correct line
     // (horizontal addressing mode does not draw lines of pixels... :(  )
-    uint8_t pixel_in_byte = (1 << ymod);
+    uint8_t pixel_in_byte = (uint8_t)((uint8_t)1 << ymod);
 
     // fill the buffer with the line information
     memset(Screen.pbuffer + 1, pixel_in_byte, Line.length);
