@@ -411,21 +411,23 @@ void ssd1309_cls(ScreenDefines Screen) {
 
     ssd1309_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 
-    /* Allocate the memory for clearing the screen */
-    Screen.pbuffer = malloc(129);
-    if(!Screen.pbuffer){
-        level_log(ERROR, "Memory allocation failed for the I2C buffer");
-        REMOVE_FROM_STACK_DEPTH();
-        return;
-    }
+    /* Calculate the most efficient way to clear the screen with the given buffer */
+    uint8_t clear_length = Screen.buffer_size;
+    uint8_t iterations = (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) / (clear_length - Screen.offset.control);
 
-    memset(Screen.pbuffer, 0, 129);
+
+    memset(Screen.pbuffer, 0, clear_length);
     // load_i2c_buffer((&SSD1309_RAM_WRITE_BYTE), 1, 0, 0);
     memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
-    for (uint8_t i = 0; i < 8; i++) {
-        ssd_write(Screen, 129);
+    for (uint8_t i = 0; i < iterations; i++) {
+        ssd_write(Screen, clear_length);
     }
+
+    if ( (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) {
+        ssd_write(Screen, ((Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) )
+    }
+
     // ssd_write(9); // Compensate for the control byte at the start of the buffer. (The for loop really only writes 127 bytes to the screen)
 
     level_log(TRACE, "SSD1309: Screen Cleared");
