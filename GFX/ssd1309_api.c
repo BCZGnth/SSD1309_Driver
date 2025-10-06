@@ -112,7 +112,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     uint8_t n;
     uint8_t number_of_chars_written; // the snprintf function actually returns an integer value, but I hope that the amount of characters will never exceed 256...
-    char* data_to_write = malloc(168); // 168 bytes can hold the max number of characters that can be displayed on the screen
+    unsigned char data_to_write[168]; // 168 bytes can hold the max number of characters that can be displayed on the screen
     
     if (data_to_write == NULL)
     {
@@ -157,8 +157,6 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     ssd_write(Screen, (args.constrained_length * Screen.character.width_pad)); // The number of bytes to write to the i2c buffer is the number of characters multiplied by the width of each character (5) plus the padding (1 byte) between each character
 
-    free(data_to_write); // Free the allocated memory for data_to_write
-    data_to_write = NULL; // Set the pointer to NULL to avoid dangling pointers
     level_log(TRACE, "SSD1309: Done Writing Number");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_write_number
 
@@ -190,7 +188,6 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     level_log(TRACE, "Printing: \"%s\"", args.text);
 
-    uint8_t* letter_buffer;
     uint16_t tmp16; // A variable to hold the 16 bit value of a scaled byte
     uint8_t tmp[2]; // tmp16 will get split into these two bytes to get the right endianness when sending the data over the i2c bus.
     size_t write_size;
@@ -335,8 +332,8 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     default:
 
         /** Allocate memory to write a single letter each time */
-        letter_buffer = calloc((Screen.character.width_pad * (args.scale * args.scale) + Screen.character.pad), sizeof(uint8_t));
-        memcpy(letter_buffer, (&SSD1309_RAM_WRITE_BYTE), Screen.offset.control);
+        uint8_t letter_buffer[33];
+        memcpy(&letter_buffer, (&SSD1309_RAM_WRITE_BYTE), Screen.offset.control);
 
         level_log(TRACE, "Print: Delay of %d", args.delay);
 
@@ -376,13 +373,12 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
             }
 
             // Wait for 10ms before writing the next letter
-            __delay_ms(10);
+            for(uint8_t i = args.delay; i < 1; i--) { 
+                __delay_ms(1);
+            }
 
             REMOVE_FROM_STACK_DEPTH(); // Removing from the stack depth because this is a different I2C write than anything else in the program
         }
-
-        free(letter_buffer);
-        letter_buffer = NULL;
 
         break;
 
@@ -412,27 +408,30 @@ void ssd1309_cls(ScreenDefines Screen) {
     ssd1309_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 
     /* Calculate the most efficient way to clear the screen with the given buffer */
-    uint8_t clear_length = Screen.buffer_size;
-    uint8_t iterations = (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) / (clear_length - Screen.offset.control);
+    int clear_length = Screen.buffer_size;
+    int iterations = (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) / (clear_length - Screen.offset.control);
+    level_log(TRACE, "Clear Length is: %d", clear_length);
+    level_log(TRACE, "Screen Width = %d", Screen.ScreenWidth);
+    level_log(TRACE, "Screen height = %d", Screen.ScreenHeight);
+    level_log(TRACE, "Screen control byte offset length is: %d", Screen.offset.control);
+    level_log(TRACE, "num of iterations is: %d", iterations);
 
 
     memset(Screen.pbuffer, 0, clear_length);
     // load_i2c_buffer((&SSD1309_RAM_WRITE_BYTE), 1, 0, 0);
     memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
-    for (uint8_t i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++) {
         ssd_write(Screen, clear_length);
     }
 
+    /* If there is any remainder, after clearing the bulk of the screen calculate it with the modulo operator */
     if ( (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) {
-        ssd_write(Screen, ((Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) )
+        ssd_write(Screen, ((Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) );
     }
-
-    // ssd_write(9); // Compensate for the control byte at the start of the buffer. (The for loop really only writes 127 bytes to the screen)
 
     level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
-
 }
 
 
@@ -500,7 +499,7 @@ void ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor args)
     size_t size;
 
     /** malloc so that the cursor doesn't take up extra space */
-    uint8_t* cursor = malloc(5*sizeof(uint8_t));
+    uint8_t cursor[5];
 
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
@@ -513,7 +512,7 @@ void ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor args)
     {
 
         /** Decide whether to set the cursor all zeros or all ones */
-        memset(cursor, ((i % 2) * 0xFF), 5);
+        memset(&cursor, ((i % 2) * 0xFF), 5);
 
         /** Loading and writing the i2c buffer */
         size = load_i2c_buffer(Screen,(uint8_t*)(&SSD1309_RAM_WRITE_BYTE), 1, cursor, 5);
@@ -522,9 +521,6 @@ void ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor args)
         ssd1309_set_ram_pointer(Screen, args.ram_ptr);
         __delay_ms(200);
     }
-
-    free(cursor);
-    cursor = NULL; // Set the pointer to NULL to avoid dangling pointers
 
     level_log(TRACE, "Blinking Cursor: Done Blinking Cursor");
     REMOVE_FROM_STACK_DEPTH();
