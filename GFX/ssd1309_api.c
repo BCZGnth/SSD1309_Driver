@@ -408,27 +408,39 @@ void ssd1309_cls(ScreenDefines Screen) {
     ssd1309_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 
     /* Calculate the most efficient way to clear the screen with the given buffer */
-    int clear_length = Screen.buffer_size;
-    int iterations = (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) / (clear_length - Screen.offset.control);
+    // Calculate total screen size in bytes (assuming 1 bit per pixel, 8 pixels per byte vertically)
+    int total_screen_bytes = Screen.ScreenWidth * (Screen.ScreenHeight / 8);
+
+    // Use the full buffer size for clearing (assuming clear_length is the usable buffer size)
+    int clear_length = Screen.buffer_size - Screen.offset.control;
+
+    // Calculate the number of full iterations needed
+    int iterations = total_screen_bytes / clear_length;
+    int remainder = total_screen_bytes % clear_length;
+
+    // Log debug information
     level_log(TRACE, "Clear Length is: %d", clear_length);
-    level_log(TRACE, "Screen Width = %d", Screen.ScreenWidth);
-    level_log(TRACE, "Screen height = %d", Screen.ScreenHeight);
-    level_log(TRACE, "Screen control byte offset length is: %d", Screen.offset.control);
-    level_log(TRACE, "num of iterations is: %d", iterations);
+    level_log(TRACE, "Screen Width: %d", Screen.ScreenWidth);
+    level_log(TRACE, "Screen Height: %d", Screen.ScreenHeight);
+    level_log(TRACE, "Total Screen Bytes: %d", total_screen_bytes);
+    level_log(TRACE, "Number of Iterations: %d", iterations);
+    level_log(TRACE, "Remainder Bytes: %d", remainder);
 
-
+    // Initialize the buffer with zeros (clear screen data)
     memset(Screen.pbuffer, 0, clear_length);
-    // load_i2c_buffer((&SSD1309_RAM_WRITE_BYTE), 1, 0, 0);
-    memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
+    // Optionally set control byte for SSD1309 RAM write (if required)
+    Screen.pbuffer[0] = SSD1309_RAM_WRITE_BYTE; // Assuming control byte is needed at the start
+
+    // Perform full buffer writes
     for (int i = 0; i < iterations; i++) {
-        ssd_write(Screen, clear_length);
+        ssd_write(Screen, Screen.buffer_size);
     }
 
-    /* If there is any remainder, after clearing the bulk of the screen calculate it with the modulo operator */
-    if ( (Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) {
-        ssd_write(Screen, ((Screen.ScreenWidth * (Screen.ScreenHeight / 8)) % clear_length) );
-    }
+    // Handle any remaining bytes
+    if (remainder > 0) {
+        ssd_write(Screen, remainder);
+     }
 
     level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
