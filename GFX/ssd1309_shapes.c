@@ -10,6 +10,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
     ADD_TO_STACK_DEPTH();
     level_log(TRACE, "SSD1309 Draw VLine");
 
+    #ifndef USE_STATIC_BUFFERS
     Screen.buffer_size = (Line.length / 8) + 3;
     Screen.pbuffer = malloc((size_t)Screen.buffer_size);
     if(!Screen.pbuffer){
@@ -17,6 +18,16 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
+    #endif // USE_STATIC_BUFFERS
+    #ifdef USE_STATIC_BUFFERS
+    if((Line.length / 8) + 3 > Screen.buffer_size)
+    {
+        level_log(ERROR, "Buffer Size Too Small");
+        REMOVE_FROM_STACK_DEPTH();
+        return;
+    }
+    #endif
+
 
     // if(((Line.length / 8) + 3) > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
 
@@ -66,7 +77,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
         Line.length -= 8;
 
         // Debug
-        if(j > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+        if(j > Screen.buffer_size) { level_log(ERROR, "Buffer Too Small"); }
         
     }
 
@@ -99,6 +110,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
     ADD_TO_STACK_DEPTH();
     level_log(TRACE, "SSD1309 Draw HLine");
 
+    #ifndef USE_STATIC_BUFFERS
     Screen.buffer_size = Line.length + Screen.offset.control;
     Screen.pbuffer = malloc(Screen.buffer_size);
     if(!Screen.pbuffer){
@@ -106,8 +118,15 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
-
-    if((Line.length + Screen.offset.control) > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+    #endif
+    #ifdef USE_STATIC_BUFFERS
+    if((Line.length / 8) + 3 > Screen.buffer_size)
+    {
+        level_log(ERROR, "Buffer Size Too Small");
+        REMOVE_FROM_STACK_DEPTH();
+        return;
+    }
+    #endif
 
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, PAGE_ADDRESSING);
 

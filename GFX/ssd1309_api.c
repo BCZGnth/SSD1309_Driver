@@ -409,7 +409,7 @@ void ssd1309_cls(ScreenDefines Screen) {
 
     /* Calculate the most efficient way to clear the screen with the given buffer */
     // Calculate total screen size in bytes (assuming 1 bit per pixel, 8 pixels per byte vertically)
-    int total_screen_bytes = Screen.ScreenWidth * (Screen.ScreenHeight / 8);
+    int total_screen_bytes = Screen.ScreenWidth * Screen.ScreenHeight / 8;
 
     // Use the full buffer size for clearing (assuming clear_length is the usable buffer size)
     int clear_length = Screen.buffer_size - Screen.offset.control;
@@ -436,10 +436,13 @@ void ssd1309_cls(ScreenDefines Screen) {
     for (int i = 0; i < iterations; i++) {
         ssd_write(Screen, Screen.buffer_size);
     }
+    // ssd_write(Screen, 250);
+
+    level_log(TRACE, "Wrote iterations, Now writing remainder");
 
     // Handle any remaining bytes
     if (remainder > 0) {
-        ssd_write(Screen, remainder);
+        ssd_write(Screen, remainder + Screen.offset.control);
      }
 
     level_log(TRACE, "SSD1309: Screen Cleared");

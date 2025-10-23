@@ -15,12 +15,14 @@ void ssd_write(ScreenDefines Screen, size_t data_length){
     if(!i2c.IsBusy()){
 
         level_log(TRACE, "SSD1309: I2C Write Pending...Control byte is supposed to be: %X", Screen.pbuffer[0]);
+        level_log(TRACE, "Write length is %d", data_length);
         
         if(i2c.Write(Screen.i2c_address, Screen.pbuffer, data_length)){
             level_log(WARNING, "SSD1309: I2C Bus Busy");
         }
 
         // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
+        while(i2c.IsBusy()) { continue; } 
 
         if(!i2c.IsBusy())
         {
