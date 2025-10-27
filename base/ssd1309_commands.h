@@ -128,8 +128,8 @@ const uint8_t initializer[6] = {
     0xAF,    // Display ON
 
     0xB4,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
-    0x07,   // Set Lower Columnm start address to 0
-    0x15    // Set Higher Column start address to 4
+    0x07,   // Set Lower Columnm start address to 7
+    0x15    // Set Higher Column start address to 5
 };
 /* SSD1306  Obselete */
 // const uint8_t ssd1309_startup_sequence[29] = {

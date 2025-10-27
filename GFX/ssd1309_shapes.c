@@ -5,7 +5,8 @@
 /**
  * Takes a start x,y coordinate and a length of pixels to draw a line
  */
-void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
+void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
+{
 
     ADD_TO_STACK_DEPTH();
     level_log(TRACE, "SSD1309 Draw VLine");
@@ -45,7 +46,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
     uint8_t line_byte_len = Line.length / 8;
     uint8_t line_len_mod = Line.length % 8;
     if(line_len_mod) { line_byte_len += 1; }
-    uint8_t page_end = 0x7;
+    uint8_t page_end = page + line_byte_len - 1;
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, page, page_end);
 
     // This is our counter variable to keep track of bytes written to the display
@@ -58,7 +59,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
     // To calculate the first byte of the buffer
     if(ymod){
         // First byte:
-        //  we will calculate how many bytes there will be in the first byte
+        //  we will calculate how many bits there will be in the first byte
             uint8_t num_of_bits = 8 - ymod; // ymod is a remainder of blank bits in the first byte, hence the subtraction
         // account in the length for the first byte
             Line.length -= num_of_bits;
@@ -93,7 +94,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
 
 
     size_t length = (size_t)abs(j);
-    
+
     ssd_write(Screen, length);
 
     ssd1309_reset_addressing(Screen);
@@ -101,11 +102,15 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line){
     level_log(TRACE, "SSD1309 Drew VLine");
     REMOVE_FROM_STACK_DEPTH();
 
+    #ifndef USE_STATIC_BUFFERS
     free(Screen.pbuffer);
     Screen.pbuffer = NULL;
+    #endif
+
 }
 
-void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
+void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
+{
 
     ADD_TO_STACK_DEPTH();
     level_log(TRACE, "SSD1309 Draw HLine");
@@ -164,8 +169,10 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line){
     level_log(TRACE, "SSD1309 Drew HLine");
     REMOVE_FROM_STACK_DEPTH();
 
+    #ifndef USE_STATIC_BUFFERS
     free(Screen.pbuffer);
     Screen.pbuffer = NULL;
+    #endif
 }
 
 void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){

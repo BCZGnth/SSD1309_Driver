@@ -28,18 +28,18 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
     memcpy(Screen.pbuffer + 1, &cmd, 1);
 
 
-    // if(n_o_args){
+    if(n_o_args){
 
-    //     va_list ap;
+        va_list ap;
 
-    //     va_start (ap, 1);
-    //     for(i=0; i<n_o_args; i++){
-    //         tmp = va_arg (ap, uint8_t);
-    //         if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer");}
-    //         memcpy(Screen.pbuffer + i + 2, &tmp, 1);
-    //     }
-    //     va_end (ap);
-    // }
+        va_start (ap, 1);
+        for(i=0; i<n_o_args; i++){
+            tmp = va_arg (ap, uint8_t);
+            if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Buffer Size Too Small");}
+            memcpy(Screen.pbuffer + i + 2, &tmp, 1);
+        }
+        va_end (ap);
+    }
 
     ssd_write(Screen, n_o_args + 2);
 
