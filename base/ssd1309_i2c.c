@@ -22,7 +22,9 @@ void ssd_write(ScreenDefines Screen, size_t data_length){
         }
 
         // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
-        while(i2c.IsBusy()) { continue; } 
+
+        // suppress all errors...
+        // while(i2c.IsBusy()) { continue; } 
 
         if(!i2c.IsBusy())
         {
