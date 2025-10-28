@@ -178,10 +178,12 @@ typedef struct RamWrite{
 } Ssd1309RamWrite;
 
 typedef struct ClearLine{
+    Ssd1309RamPointer ram_ptr;
+    uint8_t char_length;
     uint8_t start_page;
-    uint8_t end_page;
+    uint8_t end_page; 
 
-} Ssd1309ClearLine;
+} Ssd1309Clear;
 
 typedef struct HVLine{
     uint8_t xstart;
@@ -205,7 +207,7 @@ typedef struct GeneralScreenStruct{
     Ssd1309Cursor cursor;
     Ssd1309RamWrite ram_write;
     Ssd1309RamPointer ram_ptr;
-    Ssd1309ClearLine clr_line;
+    Ssd1309Clear clr_line;
     ScreenStringPerLine screen_strings;
 } Ssd1309Defines;
 
