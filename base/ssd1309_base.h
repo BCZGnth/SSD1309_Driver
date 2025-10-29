@@ -15,8 +15,9 @@ const uint8_t SSD1309_RAM_WRITE_BYTE = 0x40;
 
 
 // uint8_t SSD1309_I2C_BUFFER[129]; // This is the buffer that will be used to send data to the SSD1309 screen.
-// // It is 129 bytes long because the screen is 128x64 pixels and each byte represents a column of 8 pixels.
-// // Every I2C command begins with a control byte, which gives 128 bytes of data to the screen.
+// It is 129 bytes long because the screen is 128x64 pixels and each byte represents a column of 8 pixels.
+// Every I2C command begins with a control byte, which gives 128 bytes of data to the screen.
+
 
 /* 
  * Command Structures
@@ -36,53 +37,6 @@ typedef struct CursorPointer{
     uint8_t page;
     uint8_t position;
 } Ssd1309RamPointer;
-
-
-/* Font Structures 
- * 
- * FontOffset: 
- * CharAttributes: 
- */
-typedef struct Font_ByteOffset{
-    uint8_t* pfont;
-    uint8_t ascii;
-    uint8_t control;
-} FontOffset;
-
-typedef struct CharacterAttributes{
-    uint8_t width;
-    uint8_t height;
-    uint8_t pad;
-    uint8_t width_pad;
-} CharAttributes;
-
-/* 
- * SSD1309 Screen Defines:
- * 
- * This is the main structure used in data transmission to the screen.
- * */
-typedef struct ScreenMetaData{
-    uint8_t  ScreenHeight;
-    uint8_t  ScreenWidth;
-
-    uint8_t* pbuffer;
-    size_t   buffer_size;
-
-    uint8_t* startup_buffer;
-    uint8_t  startup_size;
-
-    uint8_t  i2c_address;
-
-    uint8_t* rst_lat_port;
-    uint8_t  rst_pin;
-
-    Ssd1309RamPointer zeroed_ram_ptr;
-
-    FontOffset offset;
-    CharAttributes character;
-} ScreenDefines;
-
-
 
 /* 
  * API Structures
@@ -109,7 +63,6 @@ typedef struct ScreenMetaData{
  * 
  * ScreenStringPerLine
  */
-
 typedef struct ScreenString{
     uint8_t line_length;
     char* line0;
@@ -182,8 +135,12 @@ typedef struct ClearLine{
     uint8_t char_length;
     uint8_t start_page;
     uint8_t end_page; 
-
 } Ssd1309Clear;
+
+typedef struct WaitAnimate{
+    Ssd1309RamPointer ram_ptr;
+    uint8_t three_ctr;
+} Ssd1309Wait;
 
 typedef struct HVLine{
     uint8_t xstart;
@@ -198,6 +155,57 @@ typedef struct Rect{
     uint8_t yend;
 } Ssd1309Rect;
 
+
+/* Font Structures 
+ * 
+ * FontOffset: 
+ * CharAttributes: 
+ */
+typedef struct Font_ByteOffset{
+    uint8_t* pfont;
+    uint8_t ascii;
+    uint8_t control;
+} FontOffset;
+
+typedef struct CharacterAttributes{
+    uint8_t width;
+    uint8_t height;
+    uint8_t pad;
+    uint8_t width_pad;
+} CharAttributes;
+
+
+/* 
+ * SSD1309 Screen Defines:
+ * 
+ * This is the main structure used in data transmission to the screen.
+ * */
+typedef struct ScreenMetaData{
+    uint8_t  ScreenHeight;
+    uint8_t  ScreenWidth;
+
+    uint8_t* pbuffer;
+    size_t   buffer_size;
+
+    uint8_t* startup_buffer;
+    uint8_t  startup_size;
+
+    uint8_t  i2c_address;
+
+    uint8_t* rst_lat_port;
+    uint8_t  rst_pin;
+
+    Ssd1309RamPointer zeroed_ram_ptr;
+    Ssd1309Wait* pwait;
+
+    FontOffset offset;
+    CharAttributes character;
+} ScreenDefines;
+
+
+/**
+ * Top Level Structure
+ */
 typedef struct GeneralScreenStruct{
     ScreenDefines Screen;
     Ssd1309WriteNumber write_number;
@@ -208,6 +216,7 @@ typedef struct GeneralScreenStruct{
     Ssd1309RamWrite ram_write;
     Ssd1309RamPointer ram_ptr;
     Ssd1309Clear clr_line;
+    Ssd1309Wait wait;
     ScreenStringPerLine screen_strings;
 } Ssd1309Defines;
 

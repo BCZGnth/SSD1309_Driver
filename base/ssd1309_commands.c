@@ -186,6 +186,8 @@ Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, size_t buffer_size, uint8_t scr
         }
         };
 
+        // reference the wait structure inside the Screen Structure. 
+        Screen.Screen.pwait = &(Screen.wait);
 
     ssd1309_startup(Screen.Screen);
 

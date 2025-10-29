@@ -17,6 +17,7 @@ void   ssd1309_clear_line(     ScreenDefines Screen, Ssd1309Clear       args);
 void   ssd1309_clear_word(     ScreenDefines Screen, Ssd1309Clear       args);
 size_t ssd1309_print(          ScreenDefines Screen, Ssd1309Print       args);
 void   ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor      args);
+void   ssd1309_waiting(        ScreenDefines Screen);
 
 
 #endif // _SSD1309_API

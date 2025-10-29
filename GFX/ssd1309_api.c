@@ -556,3 +556,35 @@ void ssd1309_progress_bar(ScreenDefines Screen )
 {
     return;
 }
+
+void ssd1309_waiting(ScreenDefines Screen)
+{
+    uint8_t animation_length = 3;
+
+    if(Screen.buffer_size < 4)
+    { level_log(ERROR, "Buffer Too Small"); return; }
+
+    switch (Screen.pwait->three_ctr) {
+        case 0:
+            memset(Screen.pbuffer, 0, animation_length);
+            ssd_write(Screen, animation_length);
+            Screen.pwait->three_ctr += 1;
+            break;
+        case 1:
+            snprintf(Screen.pbuffer, animation_length, ".  ");
+            ssd_write(Screen, animation_length);
+            Screen.pwait->three_ctr += 1;
+            break;
+        case 2:
+            snprintf(Screen.pbuffer, animation_length, ".. ");
+            ssd_write(Screen, animation_length);
+            Screen.pwait->three_ctr += 1;
+            break;
+        case 3:
+            snprintf(Screen.pbuffer, animation_length, "...");
+            ssd_write(Screen, animation_length);
+            Screen.pwait->three_ctr = 0;
+            break;
+    }
+    return;
+}
