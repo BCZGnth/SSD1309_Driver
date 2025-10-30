@@ -19,8 +19,7 @@ void ssd1309_write_bitmap(ScreenDefines Screen, Ssd1309WriteBitmap args) {
     // if( (args.ystart > args.yend) || (args.ystart > 128)) return;
 
     /** Set RAM pointer constraints based on x and y values given */
-    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING
-    );
+    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING);
     ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, args.xstart, args.xend);
 
     /** For now there is no deciding how to pad/ write odd size bitmaps. I hope your bitmap has a height multiple of 8...*/
@@ -416,7 +415,7 @@ void ssd1309_cls(ScreenDefines Screen) {
 
     // Calculate the number of full iterations needed
     int iterations = total_screen_bytes / clear_length;
-    int remainder = total_screen_bytes % clear_length;
+    unsigned int remainder = total_screen_bytes % clear_length;
 
     // Log debug information
     level_log(TRACE, "Clear Length is: %d", clear_length);
@@ -559,30 +558,41 @@ void ssd1309_progress_bar(ScreenDefines Screen )
 
 void ssd1309_waiting(ScreenDefines Screen)
 {
-    uint8_t animation_length = 3;
-
+    
     if(Screen.buffer_size < 4)
     { level_log(ERROR, "Buffer Too Small"); return; }
-
+    
+    uint8_t animation_length = 3;
+    ssd1309_set_ram_pointer(Screen, Screen.pwait->ram_ptr);
+    
+    /* Depending on where we are in the cycle, either add another dot, or clear the space. 
+       We are using arrays instead of the ssd1309_print function because this is at least a little faster. */
     switch (Screen.pwait->three_ctr) {
         case 0:
-            memset(Screen.pbuffer, 0, animation_length);
-            ssd_write(Screen, animation_length);
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memset(Screen.pbuffer + Screen.offset.control, 0, animation_length * Screen.character.width + Screen.offset.control);
+            ssd_write(Screen, animation_length * Screen.character.width);
             Screen.pwait->three_ctr += 1;
             break;
         case 1:
-            snprintf(Screen.pbuffer, animation_length, ".  ");
-            ssd_write(Screen, animation_length);
+            char dots1[15] = {0, 0xc0, 0xc0, 0, 0,  0, 0, 0, 0, 0,  0, 0, 0, 0, 0};
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memcpy(Screen.pbuffer + Screen.offset.control, &dots1, animation_length * Screen.character.width + Screen.offset.control);
+            ssd_write(Screen, animation_length * Screen.character.width);
             Screen.pwait->three_ctr += 1;
             break;
         case 2:
-            snprintf(Screen.pbuffer, animation_length, ".. ");
-            ssd_write(Screen, animation_length);
+            char dots2[15] = {0, 0xc0, 0xc0, 0, 0,  0, 0xc0, 0xc0, 0, 0,  0, 0, 0, 0, 0};
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memcpy(Screen.pbuffer + Screen.offset.control, &dots2, animation_length * Screen.character.width + Screen.offset.control);
+            ssd_write(Screen, animation_length * Screen.character.width);
             Screen.pwait->three_ctr += 1;
             break;
         case 3:
-            snprintf(Screen.pbuffer, animation_length, "...");
-            ssd_write(Screen, animation_length);
+            char dots3[15] = {0, 0xc0, 0xc0, 0, 0,  0, 0xc0, 0xc0, 0, 0,  0, 0xc0, 0xc0, 0, 0};
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memcpy(Screen.pbuffer + Screen.offset.control, &dots3, animation_length * Screen.character.width + Screen.offset.control);
+            ssd_write(Screen, animation_length * Screen.character.width);
             Screen.pwait->three_ctr = 0;
             break;
     }

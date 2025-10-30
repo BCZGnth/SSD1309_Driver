@@ -183,8 +183,15 @@ Ssd1309Defines ssd1309_init(uint8_t* i2c_buffer, size_t buffer_size, uint8_t scr
             .line5 = 0,
             .line6 = 0,
             .line7 = 0,
+        },
+        .wait = {
+            .ram_ptr = {
+                .page = 7,
+                .position = 112
+            },
+            .three_ctr = 0
         }
-        };
+    };
 
         // reference the wait structure inside the Screen Structure. 
         Screen.Screen.pwait = &(Screen.wait);
