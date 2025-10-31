@@ -4,4 +4,4 @@
 
 // void h2o_rectangular_frames(ScreenDefines Screen);
 void h2o_outline(ScreenDefines Screen);
-// void generic_payload_frame(ScreenDefines Screen);
+void generic_payload_frame(ScreenDefines Screen);

@@ -208,16 +208,16 @@ typedef struct ScreenMetaData{
  */
 typedef struct GeneralScreenStruct{
     ScreenDefines Screen;
-    Ssd1309WriteNumber write_number;
-    Ssd1309Print print;
-    Ssd1309Prnt PRINT;
-    Ssd1309WriteBitmap write_bitmap;
-    Ssd1309Cursor cursor;
-    Ssd1309RamWrite ram_write;
-    Ssd1309RamPointer ram_ptr;
-    Ssd1309Clear clr_line;
+    // Ssd1309WriteNumber write_number;
+    // Ssd1309Print print;
+    // Ssd1309Prnt PRINT;
+    // Ssd1309WriteBitmap write_bitmap;
+    // Ssd1309Cursor cursor;
+    // Ssd1309RamWrite ram_write;
+    // Ssd1309RamPointer ram_ptr;
+    // Ssd1309Clear clr_line;
     Ssd1309Wait wait;
-    ScreenStringPerLine screen_strings;
+    // ScreenStringPerLine screen_strings;
 } Ssd1309Defines;
 
 
