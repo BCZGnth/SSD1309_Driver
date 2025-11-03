@@ -98,7 +98,7 @@ void generic_payload_frame(ScreenDefines Screen)
         .text = "Ser #:",
         .length = 6,
         .ram_ptr = {
-            .page = 2,
+            .page = 1,
             .position = 3
         },
         .scale = 1,

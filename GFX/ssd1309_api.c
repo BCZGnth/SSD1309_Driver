@@ -195,7 +195,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     ssd1309_set_ram_pointer(Screen, args.ram_ptr); // Put the cursor where specified in the args structure
 
-    char message_chars[128];
+    char message_chars[32];
     memcpy(&message_chars, args.text, args.length);
 
     memset(Screen.pbuffer, 0, (size_t)Screen.buffer_size);
