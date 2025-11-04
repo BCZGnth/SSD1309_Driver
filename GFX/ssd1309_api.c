@@ -106,6 +106,12 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     ADD_TO_STACK_DEPTH(); // ssd1309_write_number
     level_log(TRACE, "Writing Number: %d", args.data);
+
+    uint8_t write_length = (args.constrained_length * Screen.character.width_pad) + Screen.offset.control;
+    if(Screen.buffer_size < write_length) {
+        level_log(ERROR, "Buffer Size Too Small");
+        return 0;
+    }
     
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
@@ -121,16 +127,18 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     }
     #endif // USE_STATIC_BUFFERS
 
-    number_of_chars_written = snprintf((data_to_write), 36, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
-
+    number_of_chars_written = snprintf(&data_to_write[0], 36, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
+    if(number_of_chars_written <= 0) {
+        level_log(ERROR, "snprintf call did not write data to a buffer. Possibly you have a bad args.data");
+    }
     uint8_t right_align_character_offset = (args.constrained_length - number_of_chars_written) * 6;
 
     /* Loading all Zeros into the I2C buffer */
-    memset(Screen.pbuffer, 0, 128);
+    memset(Screen.pbuffer, 0, write_length);
 
-    memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
+    memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), Screen.offset.control);
 
-    level_log(TRACE, "Loading the I2C buffer with the numeric characters", args.data);
+    level_log(TRACE, "Loading the I2C buffer with the numeric characters");
     for (n = 0; n < number_of_chars_written; n++)
     { // Iterate through all of the characters in the string
 
@@ -153,10 +161,19 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
          *      This is only possible because the i2c buffer is loaded with zeros before any data gets written to it.
          *
          */
-        memcpy((Screen.pbuffer + (n * Screen.character.width_pad) + 1 + right_align_character_offset), (((data_to_write[n] - Screen.offset.ascii) * Screen.character.width) + Screen.offset.pfont), Screen.character.width);
+        memcpy((Screen.pbuffer + (n * Screen.character.width_pad) + Screen.offset.control + right_align_character_offset), (((data_to_write[n] - Screen.offset.ascii) * Screen.character.width) + Screen.offset.pfont), Screen.character.width);
     }
 
-    ssd_write(Screen, (args.constrained_length * Screen.character.width_pad)); // The number of bytes to write to the i2c buffer is the number of characters multiplied by the width of each character (5) plus the padding (1 byte) between each character
+    ssd_write(Screen, write_length); // The number of bytes to write to the i2c buffer is the number of characters multiplied by the width of each character (5) plus the padding (1 byte) between each character
+
+    // Memory addressing mode back to page addressing
+    ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, PAGE_ADDRESSING);
+
+    // Set the column range back to its reset value
+    ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, 0x0, 0xFF);
+
+    // Set the page range back to its reset value
+    ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0x0, 0x7);
 
     level_log(TRACE, "SSD1309: Done Writing Number");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_write_number
@@ -560,12 +577,19 @@ void ssd1309_progress_bar(ScreenDefines Screen )
 
 void ssd1309_waiting(ScreenDefines Screen)
 {
+    ADD_TO_STACK_DEPTH();
+    level_log(TRACE, "SSD1309 Waiting...");
     
     if(Screen.buffer_size < 4)
     { level_log(ERROR, "Buffer Too Small"); return; }
     
     uint8_t animation_length = 3;
-    ssd1309_set_ram_pointer(Screen, Screen.pwait->ram_ptr);
+    Ssd1309RamPointer wait_ram_ptr = {
+        .page = 7,
+        .position = 112
+    };
+
+    ssd1309_set_ram_pointer(Screen, wait_ram_ptr);
     
     /* Depending on where we are in the cycle, either add another dot, or clear the space. 
        We are using arrays instead of the ssd1309_print function because this is at least a little faster. */
@@ -597,6 +621,15 @@ void ssd1309_waiting(ScreenDefines Screen)
             ssd_write(Screen, animation_length * Screen.character.width);
             Screen.pwait->three_ctr = 0;
             break;
+        default:
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memset(Screen.pbuffer + Screen.offset.control, 0, animation_length * Screen.character.width + Screen.offset.control);
+            ssd_write(Screen, animation_length * Screen.character.width);
+            Screen.pwait->three_ctr = 0;
+            break;
     }
+
+    level_log(TRACE, "SSD1309 Done Waiting");
+    REMOVE_FROM_STACK_DEPTH();
     return;
 }
