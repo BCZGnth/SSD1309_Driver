@@ -21,7 +21,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
     }
     #endif // USE_STATIC_BUFFERS
     #ifdef USE_STATIC_BUFFERS
-    if((Line.length / 8) + 3 > Screen.buffer_size)
+    if((Line.length / 8) + 2 > Screen.buffer_size)
     {
         level_log(ERROR, "Buffer Size Too Small");
         REMOVE_FROM_STACK_DEPTH();
@@ -53,7 +53,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
     int j = 0;
 
     // Fill the useful part of the i2c buffer with zeros
-    memset(Screen.pbuffer, 0, 10);
+    // memset(Screen.pbuffer, 0, 10);
     memset(Screen.pbuffer + j++, SSD1309_RAM_WRITE_BYTE, 1);
 
     // To calculate the first byte of the buffer
@@ -77,9 +77,8 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
         memset(Screen.pbuffer + j++, 0xff, 1);
         Line.length -= 8;
 
-        // Debug
-        if(j > Screen.buffer_size) { level_log(ERROR, "Buffer Too Small"); }
-        
+        // // Don't Think this debug is necessary since this is already calculated at the top of the file.
+        // if(j + 1 > Screen.buffer_size) { level_log(ERROR, "Buffer Too Small"); }
     }
 
     // Last Byte:
@@ -91,7 +90,6 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
         }
         memset(Screen.pbuffer + j++, last, 1);
     }
-
 
     size_t length = (size_t)abs(j);
 
@@ -106,7 +104,6 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
     free(Screen.pbuffer);
     Screen.pbuffer = NULL;
     #endif
-
 }
 
 void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
@@ -125,7 +122,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
     }
     #endif
     #ifdef USE_STATIC_BUFFERS
-    if((Line.length / 8) + 3 > Screen.buffer_size)
+    if((Line.length) + Screen.offset.control > Screen.buffer_size)
     {
         level_log(ERROR, "Buffer Size Too Small");
         REMOVE_FROM_STACK_DEPTH();
@@ -146,23 +143,22 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
         .page = page,
         .position = Line.xstart
     };
+
     ssd1309_set_ram_pointer(Screen, ram_ptr);
 
     // This will be a RAM write
-    memset(Screen.pbuffer, 0, 129);
     memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, 1);
-
 
     uint8_t ymod = Line.ystart % 8;
 
     // to set a single bit in the byte in order to write the correct line
     // (horizontal addressing mode does not draw lines of pixels... :(  )
-    uint8_t pixel_in_byte = (uint8_t)((uint8_t)1 << ymod);
+    uint8_t pixel_in_byte = ((uint8_t)1 << ymod);
 
     // fill the buffer with the line information
-    memset(Screen.pbuffer + 1, pixel_in_byte, Line.length);
+    memset(Screen.pbuffer + Screen.offset.control, pixel_in_byte, Line.length);
 
-    ssd_write(Screen, Line.length + 1);
+    ssd_write(Screen, Line.length + Screen.offset.control);
 
     ssd1309_reset_addressing(Screen);
 

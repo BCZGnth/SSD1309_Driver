@@ -24,6 +24,10 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
     n_o_args = (command >> 8) & 0xFF;
     cmd = command & 0xFF;
 
+    if(Screen.buffer_size < 4) {
+        level_log(ERROR, "Buffer Size Too Small");
+    }
+
     memcpy(Screen.pbuffer, &SSD1309_COMMAND_BYTE, 1);
     memcpy(Screen.pbuffer + 1, &cmd, 1);
 

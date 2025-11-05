@@ -112,6 +112,13 @@ size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setu
     ADD_TO_STACK_DEPTH(); // load_i2c_buffer
 
     level_log(TRACE, "SSD1309: Loading the I2C Buffer");
+
+    // Error check
+    if(setup_length + data_length > Screen.buffer_size) {
+        level_log(ERROR, "Buffer Size Too Small");
+        return 0; // Do not let memory get corrupted.
+    }
+
     /* Loading the setup bytes into the buffer */
     memcpy(Screen.pbuffer, psetup_bytes, setup_length);
 
