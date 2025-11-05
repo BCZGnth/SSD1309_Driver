@@ -64,10 +64,10 @@
 void h2o_outline(ScreenDefines Screen) {
 
     Ssd1309Print h2o_connected = {
-        .text = "H2O Connected",
-        .length = 13,
+        .text = "H2O Disconnected",
+        .length = 16,
         .ram_ptr = {
-            .position = 24,
+            .position = 15,
             .page = 2
         },
         .scale = 1,

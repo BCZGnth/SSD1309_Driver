@@ -421,7 +421,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
             // Wait for 10ms before writing the next letter
             for(uint8_t i = args.delay; i < 1; i--) { 
-                __delay_ms(1);
+                __delay_ms(80);
             }
 
             REMOVE_FROM_STACK_DEPTH(); // Removing from the stack depth because this is a different I2C write than anything else in the program
