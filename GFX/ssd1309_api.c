@@ -131,7 +131,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     }
     #endif // USE_STATIC_BUFFERS
 
-    number_of_chars_written = snprintf(&data_to_write[0], args.constrained_length, "%d", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
+    number_of_chars_written = snprintf(&data_to_write[0], args.constrained_length, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
     if(number_of_chars_written <= 0) {
         level_log(ERROR, "snprintf call did not write data to a buffer. Possibly you have a bad args.data");
     }
@@ -419,10 +419,11 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
                 }
             }
 
-            // Wait for 10ms before writing the next letter
-            for(uint8_t i = args.delay; i < 1; i--) { 
-                __delay_ms(80);
-            }
+            // Wait for 90ms before writing the next letter
+            __delay_ms(90);
+            // for(uint8_t i = args.delay; i < 1; i--) { 
+            //     __delay_ms(80);
+            // }
 
             REMOVE_FROM_STACK_DEPTH(); // Removing from the stack depth because this is a different I2C write than anything else in the program
         }
@@ -462,7 +463,7 @@ void ssd1309_cls(ScreenDefines Screen) {
     /* We will also assume that the Screen.buffer_size is greater than 1 */
     unsigned int clear_length = Screen.buffer_size - (unsigned int)Screen.offset.control;
 
-    /* No Erro check needed since clear_length will always be less than Screen.buffer_size */
+    /* No Error check needed since clear_length will always be less than Screen.buffer_size */
     // if(clear_length > Screen.buffer_size) {
     //     level_log(ERROR, "Buffer Size Too Small");
     //     return;
@@ -480,7 +481,6 @@ void ssd1309_cls(ScreenDefines Screen) {
     level_log(TRACE, "Number of Iterations: %d", iterations);
     level_log(TRACE, "Remainder Bytes: %d", remainder);
     
-    // Optionally set control byte for SSD1309 RAM write (if required)
     Screen.pbuffer[0] = SSD1309_RAM_WRITE_BYTE; // Assuming control byte is needed at the start
 
     // Initialize the buffer with zeros (clear screen data)
@@ -651,12 +651,14 @@ void ssd1309_waiting(ScreenDefines Screen)
             Screen.pwait->three_ctr += 1;
             break;
         case 1:
+        case 5:
             memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
             memcpy(Screen.pbuffer + Screen.offset.control, &dots + 10, animation_length + Screen.offset.control);
             ssd_write(Screen, animation_length + Screen.offset.control);
             Screen.pwait->three_ctr += 1;
             break;
         case 2:
+        case 4:
             memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
             memcpy(Screen.pbuffer + Screen.offset.control, &dots + 5, animation_length + Screen.offset.control);
             ssd_write(Screen, animation_length + Screen.offset.control);
@@ -666,10 +668,14 @@ void ssd1309_waiting(ScreenDefines Screen)
             memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
             memcpy(Screen.pbuffer + Screen.offset.control, &dots, animation_length + Screen.offset.control);
             ssd_write(Screen, animation_length + Screen.offset.control);
-            Screen.pwait->three_ctr = 0;
+            Screen.pwait->three_ctr += 1;
             break;
+        case 6:
         default:
         /* Fast default case */
+            memset(Screen.pbuffer, SSD1309_RAM_WRITE_BYTE, Screen.offset.control);
+            memset(Screen.pbuffer + Screen.offset.control, 0, animation_length + Screen.offset.control);
+            ssd_write(Screen, animation_length + Screen.offset.control);
             Screen.pwait->three_ctr = 0;
             break;
         // default:

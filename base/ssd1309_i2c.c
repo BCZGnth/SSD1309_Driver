@@ -12,6 +12,9 @@ void ssd_write(ScreenDefines Screen, size_t data_length){
 
     ADD_TO_STACK_DEPTH(); // ssd_write
 
+    /* If the I2C bus is busy wait until it isn't anymore */
+    while(i2c.IsBusy()){ continue; }
+
     if(!i2c.IsBusy()){
 
         level_log(TRACE, "SSD1309: I2C Write Pending...Control byte is supposed to be: %X", Screen.pbuffer[0]);
