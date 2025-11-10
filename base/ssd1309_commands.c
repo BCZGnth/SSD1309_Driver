@@ -100,7 +100,7 @@ void ssd1309_startup(ScreenDefines Screen)
 
     ssd1309_cls(Screen);
 
-    size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), Screen.offset.control, (uint8_t*)initializer, initializer_length);
+    size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), Screen.offset.control, (uint8_t*)ssd1309_initializer, ssd1309_initializer_length);
     ssd_write(Screen, size);
 
     level_log(TRACE, "SSD1309: Startup Sequence Done");

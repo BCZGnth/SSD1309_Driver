@@ -94,9 +94,8 @@ const uint16_t SET_DISPLAY_OFFSET = 0x01D3;  // Set Display offset
 const uint8_t NO_OFFSET = 0x00;              //      no display offset
 
 
-const uint8_t ssd1309_startup_length = 23;
 
-const uint8_t ssd1309_startup_sequence[23] = {
+const uint8_t ssd1309_startup_sequence[] = {
     0xAE,   // Display OFF
     0xD5,   // Set Display clock divide ratio/oscillator frequency
     0x80,   //    Default freq and divide ratio
@@ -120,17 +119,20 @@ const uint8_t ssd1309_startup_sequence[23] = {
     0xDB,   // Set VCOMH deselect level
     0x40,   //    ~0.77 × Vcc
 };
+const uint8_t ssd1309_startup_length = sizeof(ssd1309_startup_sequence);
 
-const uint8_t initializer_length = 6;
-const uint8_t initializer[6] = {
+
+const uint8_t ssd1309_initializer[] = {
     0xA4,   // Resume to RAM content display
     0xA6,   // Set normal display (not inverted)
     0xAF,    // Display ON
-
+    
     0xB4,   // Set page address to page 5 (pages are zero indexed so page 4 is the fifth page...)
     0x07,   // Set Lower Columnm start address to 7
     0x15    // Set Higher Column start address to 5
 };
+const uint8_t ssd1309_initializer_length = sizeof(ssd1309_initializer);
+
 /* SSD1306  Obselete */
 // const uint8_t ssd1309_startup_sequence[29] = {
 //     0xAE,   // Display OFF  
