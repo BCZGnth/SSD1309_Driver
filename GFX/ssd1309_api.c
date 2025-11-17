@@ -231,6 +231,9 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
         return 0;
     }
 
+    /* Constrain the columns so that we skip the first and last. This way frames don't get overwritten */
+    ssd1309_send_command(Screen, SET_COLUMN_ADDRESS, 1, 126);
+
     ssd1309_set_ram_pointer(Screen, args.ram_ptr); // Put the cursor where specified in the args structure
 
     // char message_chars[48];

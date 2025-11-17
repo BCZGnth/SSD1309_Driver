@@ -67,8 +67,10 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
     uint8_t msb_column = ((args.position >> 4) & 0x0F) | 0x10;
     uint8_t lsb_column = args.position & 0x0F;
     
+    /* Determine the command for setting page number*/
     uint8_t msg[3] = {(args.page | 0xB0), msb_column, lsb_column};
 
+    /* Set the ram pointer to the page and position specified */
     size_t size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), control_length, (&msg[0]), data_length);
 
     ssd_write(Screen, size);
