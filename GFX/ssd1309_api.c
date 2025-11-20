@@ -116,7 +116,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
         level_log(ERROR, "Buffer Size Too Small");
         return 0;
     }
-    
+
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
     uint8_t n;

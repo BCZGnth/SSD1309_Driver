@@ -85,8 +85,38 @@ void h2o_outline(ScreenDefines Screen) {
     ssd1309_print(Screen, h2o_connected);
 }
 
-void generic_payload_frame(ScreenDefines Screen)
+void generic_payload_frame(ScreenDefines Screen, uint32_t serial_number)
 {
+    Ssd1309Print ser_num = {
+        .text = "Ser #:",
+        .length = 6,
+        .ram_ptr = {
+            .page = 0,
+            .position = 3
+        },
+        .scale = 1,
+        .delay = 0
+    };
+
+    /* Print Serial number */
+    Ssd1309WriteNumber ser_val = {
+        .constrained_length = 6,
+        .data = serial_number,
+        .ram_ptr = {
+            .page = 0,
+            .position = 42, 
+        },
+        .scale = 1,
+    };
+
+    ssd1309_write_number(Screen, ser_val);
+    ssd1309_print(       Screen, ser_num);
+}
+
+void pretty_payload_frame(ScreenDefines Screen, uint32_t serial_number)
+{
+
+
     Ssd1309Rect full_outline = {
         .xstart = 0,
         .xend = 127,
@@ -111,7 +141,19 @@ void generic_payload_frame(ScreenDefines Screen)
         .length = 50
     };
 
-    ssd1309_draw_rect( Screen, full_outline);
-    ssd1309_print(     Screen, SerNUM);
-    ssd1309_draw_hline(Screen, ser_num_underline);
+    /* Print Serial number */
+    Ssd1309WriteNumber ser_val = {
+        .constrained_length = 6,
+        .data = serial_number,
+        .ram_ptr = {
+            .page = 1,
+            .position = 42, 
+        },
+        .scale = 1,
+    };
+
+    ssd1309_write_number(Screen, ser_val);
+    ssd1309_draw_rect(   Screen, full_outline);
+    ssd1309_print(       Screen, SerNUM);
+    ssd1309_draw_hline(  Screen, ser_num_underline);
 }

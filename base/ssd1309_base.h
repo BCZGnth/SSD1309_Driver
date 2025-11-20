@@ -78,7 +78,7 @@ typedef struct ScreenString{
 typedef struct WriteNumber{
     uint32_t data;
     uint8_t constrained_length; // make a maximum number of characters that can be printed. (neede to right align the characters.)
-    uint8_t right_align;
+    // uint8_t right_align;
     uint8_t scale;
 
     Ssd1309RamPointer ram_ptr;

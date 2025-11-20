@@ -35,7 +35,6 @@ void screen_demo(Ssd1309Defines OLED){
         OLED.write_number.ram_ptr.page = i;
         OLED.write_number.scale = 1;
         OLED.write_number.constrained_length = 4;
-        OLED.write_number.right_align = 1;
         OLED.write_number.data = i;
 
         // __delay_ms(1)
@@ -67,7 +66,6 @@ void screen_demo(Ssd1309Defines OLED){
     OLED.write_number.ram_ptr.page = OLED.print.ram_ptr.page;
     OLED.write_number.scale = 0;
     OLED.write_number.constrained_length = 6;
-    OLED.write_number.right_align = 1;
     OLED.write_number.data = rand();
     level_log(TRACE, "Printing Number %d...", OLED.write_number.data);
 
