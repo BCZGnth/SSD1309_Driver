@@ -9,13 +9,13 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
 {
 
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "SSD1309 Draw VLine");
+    // level_log(TRACE, "SSD1309 Draw VLine");
 
     #ifndef USE_STATIC_BUFFERS
     Screen.buffer_size = (Line.length / 8) + 3;
     Screen.pbuffer = malloc((size_t)Screen.buffer_size);
     if(!Screen.pbuffer){
-        level_log(ERROR, "Memory Allocation Failed for I2C buffer");
+        // level_log(ERROR, "Memory Allocation Failed for I2C buffer");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
@@ -23,14 +23,14 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
     #ifdef USE_STATIC_BUFFERS
     if((Line.length / 8) + 2 > Screen.buffer_size)
     {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
     #endif
 
 
-    // if(((Line.length / 8) + 3) > Screen.buffer_size) { level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
+    // if(((Line.length / 8) + 3) > Screen.buffer_size) { // level_log(ERROR, "Cannot write more than 728 bytes to the I2C buffer"); }
 
     ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING);
 
@@ -78,7 +78,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
         Line.length -= 8;
 
         // // Don't Think this debug is necessary since this is already calculated at the top of the file.
-        // if(j + 1 > Screen.buffer_size) { level_log(ERROR, "Buffer Too Small"); }
+        // if(j + 1 > Screen.buffer_size) { // level_log(ERROR, "Buffer Too Small"); }
     }
 
     // Last Byte:
@@ -97,7 +97,7 @@ void ssd1309_draw_vline(ScreenDefines Screen, Ssd1309HVLine Line)
 
     ssd1309_reset_addressing(Screen);
 
-    level_log(TRACE, "SSD1309 Drew VLine");
+    // level_log(TRACE, "SSD1309 Drew VLine");
     REMOVE_FROM_STACK_DEPTH();
 
     #ifndef USE_STATIC_BUFFERS
@@ -110,13 +110,13 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
 {
 
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "SSD1309 Draw HLine");
+    // level_log(TRACE, "SSD1309 Draw HLine");
 
     #ifndef USE_STATIC_BUFFERS
     Screen.buffer_size = Line.length + Screen.offset.control;
     Screen.pbuffer = malloc(Screen.buffer_size);
     if(!Screen.pbuffer){
-        level_log(ERROR, "Memory Allocation Failed for I2C buffer");
+        // level_log(ERROR, "Memory Allocation Failed for I2C buffer");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
@@ -124,7 +124,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
     #ifdef USE_STATIC_BUFFERS
     if((Line.length) + Screen.offset.control > Screen.buffer_size)
     {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
@@ -162,7 +162,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
 
     ssd1309_reset_addressing(Screen);
 
-    level_log(TRACE, "SSD1309 Drew HLine");
+    // level_log(TRACE, "SSD1309 Drew HLine");
     REMOVE_FROM_STACK_DEPTH();
 
     #ifndef USE_STATIC_BUFFERS
@@ -174,7 +174,7 @@ void ssd1309_draw_hline(ScreenDefines Screen, Ssd1309HVLine Line)
 void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){
     // ssd1309_send_command(Screen, SET_DISPLAY_ON_OUTPUT_IGNORES_RAM_CONTENT);
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "SSD1309 Draw Rectangle");
+    // level_log(TRACE, "SSD1309 Draw Rectangle");
 
     uint8_t hlength = (Rect.xend - Rect.xstart - 1);
     uint8_t hxstart = Rect.xstart + 1;
@@ -210,7 +210,7 @@ void ssd1309_draw_rect(ScreenDefines Screen, Ssd1309Rect Rect){
     ssd1309_draw_hline(Screen, hline2);
 
     // ssd1309_send_command(Screen, SET_DISPLAY_ON_RESUME_RAM_CONTENT_DISPLAY);
-    level_log(TRACE, "SSD1309 Drew Rectangle");
+    // level_log(TRACE, "SSD1309 Drew Rectangle");
     REMOVE_FROM_STACK_DEPTH();
 }
 

@@ -17,14 +17,14 @@ void ssd_write(ScreenDefines Screen, size_t data_length){
 
     if(!i2c.IsBusy()){
 
-        level_log(TRACE, "SSD1309: I2C Write Pending...Control byte is supposed to be: %X", Screen.pbuffer[0]);
-        level_log(TRACE, "Write length is %d", data_length);
+        // level_log(TRACE, "SSD1309: I2C Write Pending...Control byte is supposed to be: %X", Screen.pbuffer[0]);
+        // level_log(TRACE, "Write length is %d", data_length);
         
         if(i2c.Write(Screen.i2c_address, Screen.pbuffer, data_length)){
-            level_log(WARNING, "SSD1309: I2C Bus Busy");
+            // level_log(WARNING, "SSD1309: I2C Bus Busy");
         }
 
-        // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
+        // // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
 
         // suppress all errors...
         // while(i2c.IsBusy()) { continue; } 
@@ -34,21 +34,21 @@ void ssd_write(ScreenDefines Screen, size_t data_length){
             if (i2c.ErrorGet() == I2C_ERROR_NONE)
             {
                 // I2C Write sucessful
-                level_log(INFO, "SSD1309: I2C Write Sucessful");
+                // level_log(INFO, "SSD1309: I2C Write Sucessful");
             }
             else
             {
                 // Error handling 
-                level_log(ERROR, "SSD1309: I2C Write Error");
+                // level_log(ERROR, "SSD1309: I2C Write Error");
             }
         }
     } 
     else 
     {
-        level_log(ERROR, "SSD1309: I2C Cannot Write to Peripheral. Bus is Busy");
+        // level_log(ERROR, "SSD1309: I2C Cannot Write to Peripheral. Bus is Busy");
     }
 
-    level_log(TRACE, "SSD1309: I2C Write Finished");
+    // level_log(TRACE, "SSD1309: I2C Write Finished");
     REMOVE_FROM_STACK_DEPTH(); // ssd_write 
 }
 
@@ -59,43 +59,43 @@ void ssd_write(size_t data_length){
 
     /* Error handling for when the screen buffer is NULL */
     if(Screen.pbuffer == NULL) {
-        level_log(ERROR, "Screen Buffer is NULL");
+        // level_log(ERROR, "Screen Buffer is NULL");
         return;
     }
 
     ADD_TO_STACK_DEPTH(); // ssd_write
 
     while(i2c.IsBusy()) {
-        level_log(TRACE, "I2C bus busy, waiting...");
+        // level_log(TRACE, "I2C bus busy, waiting...");
         __delay_ms(1);
     }
 
     if(!i2c.IsBusy()){
 
-        level_log(TRACE, "SSD1309: I2C Write Pending...First byte is supposed to: %X", ssd1309_i2c_buffer[0]);
+        // level_log(TRACE, "SSD1309: I2C Write Pending...First byte is supposed to: %X", ssd1309_i2c_buffer[0]);
         
         if(i2c.Write(SSD1309_ADDRESS, &ssd1309_i2c_buffer, data_length)){
-            level_log(WARNING, "SSD1309: I2C Bus Busy");
+            // level_log(WARNING, "SSD1309: I2C Bus Busy");
         }
 
-        // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
+        // // level_log(TRACE, "SSD1309: I2C Write Sent to Peripheral");
 
         if(!i2c.IsBusy())
         {
             if (i2c.ErrorGet() == I2C_ERROR_NONE)
             {
-                level_log(INFO, "SSD1309: I2C Write Sucessful");
+                // level_log(INFO, "SSD1309: I2C Write Sucessful");
             }
             else
             {
-                level_log(ERROR, "SSD1309: I2C Write Error");
+                // level_log(ERROR, "SSD1309: I2C Write Error");
             }
         }
     } else {
-        level_log(ERROR, "SSD1309: I2C Cannot Write to Peripheral. Bus is Busy");
+        // level_log(ERROR, "SSD1309: I2C Cannot Write to Peripheral. Bus is Busy");
     }
 
-    level_log(TRACE, "SSD1309: I2C Write Finished");
+    // level_log(TRACE, "SSD1309: I2C Write Finished");
     REMOVE_FROM_STACK_DEPTH(); // ssd_write 
 }
 #endif // I2C_WRITE_PROTECTION
@@ -114,11 +114,11 @@ void ssd_write(size_t data_length){
 size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setup_length, uint8_t * pdata, size_t data_length) {
     ADD_TO_STACK_DEPTH(); // load_i2c_buffer
 
-    level_log(TRACE, "SSD1309: Loading the I2C Buffer");
+    // level_log(TRACE, "SSD1309: Loading the I2C Buffer");
 
     // Error check
     if(setup_length + data_length > Screen.buffer_size) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         return 0; // Do not let memory get corrupted.
     }
 
@@ -128,7 +128,7 @@ size_t load_i2c_buffer(ScreenDefines Screen, uint8_t * psetup_bytes, size_t setu
     /* Loading the data into the buffer after the setup bytes */
     memcpy((Screen.pbuffer + setup_length), pdata, data_length);
 
-    level_log(TRACE, "SSD1309: I2C Buffer Loaded");
+    // level_log(TRACE, "SSD1309: I2C Buffer Loaded");
     REMOVE_FROM_STACK_DEPTH(); // load_i2c_buffer   
 
     return setup_length + data_length;

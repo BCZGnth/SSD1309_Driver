@@ -16,7 +16,7 @@
 void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
 
     ADD_TO_STACK_DEPTH(); // ssd1309_send_command
-    level_log(TRACE, "Sending command: %X", command);
+    // level_log(TRACE, "Sending command: %X", command);
 
     uint8_t tmp, i, n_o_args, cmd, j;
     j = 0;
@@ -25,7 +25,7 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
     cmd = command & 0xFF;
 
     if(Screen.buffer_size < 4) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
     }
 
     memcpy(Screen.pbuffer, &SSD1309_COMMAND_BYTE, 1);
@@ -39,7 +39,7 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
         va_start (ap, 1);
         for(i=0; i<n_o_args; i++){
             tmp = va_arg (ap, uint8_t);
-            if((i + 2) > Screen.buffer_size) {level_log(ERROR, "Buffer Size Too Small");}
+            if((i + 2) > Screen.buffer_size) {// level_log(ERROR, "Buffer Size Too Small");}
             memcpy(Screen.pbuffer + i + 2, &tmp, 1);
         }
         va_end (ap);
@@ -47,7 +47,7 @@ void ssd1309_send_command(ScreenDefines Screen, uint16_t command, ...){
 
     ssd_write(Screen, n_o_args + 2);
 
-    level_log(TRACE, "SSD1309: Command %X Sent", command);
+    // level_log(TRACE, "SSD1309: Command %X Sent", command);
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_send_command
 }
 
@@ -60,7 +60,7 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
     control_length = 1;
     data_length = 3;
 
-    level_log(TRACE, "Setting RAM Pointer: page %u, position %u", args.page, args.position);
+    // level_log(TRACE, "Setting RAM Pointer: page %u, position %u", args.page, args.position);
 
 
     /* Calculate the MSB and LSB commands */
@@ -75,7 +75,7 @@ void ssd1309_set_ram_pointer(ScreenDefines Screen, Ssd1309RamPointer args) {
 
     ssd_write(Screen, size);
 
-    level_log(TRACE, "SSD1309: RAM Pointer Set to page %u, column %u", args.page, args.position);
+    // level_log(TRACE, "SSD1309: RAM Pointer Set to page %u, column %u", args.page, args.position);
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_set_ram_pointer
 
 }
@@ -92,7 +92,7 @@ void ssd1309_reset_addressing(ScreenDefines Screen){
 void ssd1309_startup(ScreenDefines Screen)
 {
     ADD_TO_STACK_DEPTH(); // ssd1309_startup
-    level_log(TRACE, "Starting up the SSD1309");
+    // level_log(TRACE, "Starting up the SSD1309");
 
     // The Sd1309 needs to be reset before it will accept any I2C communications
     ssd1309_reset(Screen);
@@ -105,7 +105,7 @@ void ssd1309_startup(ScreenDefines Screen)
     size = load_i2c_buffer(Screen, (uint8_t*)(&SSD1309_COMMAND_BYTE), Screen.offset.control, (uint8_t*)ssd1309_initializer, ssd1309_initializer_length);
     ssd_write(Screen, size);
 
-    level_log(TRACE, "SSD1309: Startup Sequence Done");
+    // level_log(TRACE, "SSD1309: Startup Sequence Done");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_startup
 }
 

@@ -63,9 +63,9 @@ print at one time.
  * @param     Screen: the screenDefines structure that general screen definitions
  * @param     args: the Ssd1309WriteNumber struct that holds the specific paramaters for writing a number to the screen 
  *
- * This function first converts the integer data coming in, into string data using the snprintf function
+ * This function first converts the integer data coming in, into string data using the sn// printf function
  *
- * The snprintf function returns the number of characters written to the character buffer
+ * The sn// printf function returns the number of characters written to the character buffer
  *
  * Then, based on the number of characters written into the buffer, we calculate how many psetup_bytes to pad
  * the i2c buffer with in order to right align the data.
@@ -105,7 +105,7 @@ print at one time.
 size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     ADD_TO_STACK_DEPTH(); // ssd1309_write_number
-    level_log(TRACE, "Writing Number: %d", args.data);
+    // level_log(TRACE, "Writing Number: %d", args.data);
 
     /** 
      * Don't be fooled by the term "constrained length" This is just a parameter that is used to right align the text since the buffer gets written left to right. 
@@ -113,41 +113,41 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
 
     uint8_t write_length = (args.constrained_length * Screen.character.width_pad) + Screen.offset.control;
     if(Screen.buffer_size < write_length) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         return 0;
     }
 
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
     uint8_t n;
-    uint8_t number_of_chars_written; // the snprintf function actually returns an integer value, but I hope that the amount of characters will never exceed 256...
+    uint8_t number_of_chars_written; // the sn// printf function actually returns an integer value, but I hope that the amount of characters will never exceed 256...
     unsigned char data_to_write[36]; // Don't really need to display numbers that are more than 6 digits long. 6 * 6 = 36
     
     #ifndef USE_STATIC_BUFFERS
     if (data_to_write == NULL)
     {
-        level_log(ERROR, "SSD1309: Memory allocation failed for data_to_write");
+        // level_log(ERROR, "SSD1309: Memory allocation failed for data_to_write");
         return 0;
     }
     #endif // USE_STATIC_BUFFERS
 
-    number_of_chars_written = snprintf(&data_to_write[0], args.constrained_length, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
+    number_of_chars_written = sn// printf(&data_to_write[0], args.constrained_length, "%u", args.data); // putting zeros at the end of the string so that it is less noise to the viewer
     if(number_of_chars_written <= 0) {
-        level_log(ERROR, "snprintf call did not write data to a buffer. Possibly you have a bad args.data");
+        // level_log(ERROR, "sn// printf call did not write data to a buffer. Possibly you have a bad args.data");
     }
     uint8_t right_align_character_offset = (args.constrained_length - number_of_chars_written) * 6;
     if(args.constrained_length < number_of_chars_written) {
-        level_log(WARNING, "constrained length smaller than chars written. Setting Right align character offset to ZERO to eliminate memory corruption possibilities");
+        // level_log(WARNING, "constrained length smaller than chars written. Setting Right align character offset to ZERO to eliminate memory corruption possibilities");
         right_align_character_offset = 0;
     }
-    level_log(TRACE, "Right-align offset is %d", right_align_character_offset);
+    // level_log(TRACE, "Right-align offset is %d", right_align_character_offset);
 
     /* Loading all Zeros into the I2C buffer */
     memset(Screen.pbuffer, 0, write_length);
 
     memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), Screen.offset.control);
 
-    level_log(TRACE, "Loading the I2C buffer with %d numeric characters", number_of_chars_written);
+    // level_log(TRACE, "Loading the I2C buffer with %d numeric characters", number_of_chars_written);
     for (n = 0; n < number_of_chars_written; n++)
     { // Iterate through all of the characters in the string
 
@@ -170,7 +170,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
          *      This is only possible because the i2c buffer is loaded with zeros before any data gets written to it.
          */
         if(n * Screen.character.width_pad > Screen.buffer_size) {
-            level_log(WARNING, "Can not load any more characters into buffer on iteration %d", n);
+            // level_log(WARNING, "Can not load any more characters into buffer on iteration %d", n);
             break;
         }
         memcpy((Screen.pbuffer + (n * Screen.character.width_pad) + Screen.offset.control + right_align_character_offset), (((data_to_write[n] - Screen.offset.ascii) * Screen.character.width) + Screen.offset.pfont), Screen.character.width);
@@ -187,7 +187,7 @@ size_t ssd1309_write_number(ScreenDefines Screen, Ssd1309WriteNumber args) {
     // Set the page range back to its reset value
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0x0, 0x7);
 
-    level_log(TRACE, "SSD1309: Done Writing Number");
+    // level_log(TRACE, "SSD1309: Done Writing Number");
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_write_number
 
     return args.constrained_length * 6;
@@ -204,7 +204,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     
     ADD_TO_STACK_DEPTH(); // ssd1309_print    
-    level_log(TRACE, "Printing: \"%s\"", args.text);
+    // level_log(TRACE, "Printing: \"%s\"", args.text);
     
     
     uint16_t tmp16; // A variable to hold the 16 bit value of a scaled byte
@@ -212,7 +212,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     size_t write_size;
     
     /* Calculate the total length of the i2c write */
-    level_log(TRACE, "Truncating the write length for the scaled font. That way it doesn't overwrite itself");
+    // level_log(TRACE, "Truncating the write length for the scaled font. That way it doesn't overwrite itself");
     if((args.length * Screen.character.width_pad * (args.scale * args.scale) + Screen.offset.control) > Screen.ScreenWidth * args.scale) {
         write_size = Screen.ScreenWidth * args.scale;
     } else {
@@ -222,12 +222,12 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
     /* Error Checks */
     // Length is zero
     if(!args.length) {
-        level_log(ERROR, "type <Ssd1309Print> args.length not defined");
+        // level_log(ERROR, "type <Ssd1309Print> args.length not defined");
         return 0;
     }
     // If the bytes length will be larger than the buffer size
     if(write_size >  Screen.buffer_size) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         return 0;
     }
 
@@ -245,7 +245,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     memset(Screen.pbuffer, 0, Screen.buffer_size);
 
-    level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
+    // level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
 
     /** Loading the I2C buffer */
     switch (args.scale)
@@ -255,7 +255,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
         case 2:
         /** Scaling the text by 2. (Right now the code does not support anything else...)*/
-            level_log(TRACE, "Print: Scaling the text by 2");
+            // level_log(TRACE, "Print: Scaling the text by 2");
 
             // Set addressing to vertical addressing. (simulate page addressing but across two pages instead of one)
             ssd1309_send_command(Screen, SET_MEMORY_ADDRESSING_MODE, VERTICAL_ADDRESSING);
@@ -284,7 +284,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
             memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
-            level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
+            // level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
 
             for (int char_index = 0; char_index < args.length; char_index++)
             {
@@ -308,7 +308,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
                     /* Memory Corruption Error Checking */
                     if(Screen.offset.control + letter_increment + current_column + column_offset > Screen.buffer_size) {
-                        level_log(ERROR, "Buffer Size Too Small");
+                        // level_log(ERROR, "Buffer Size Too Small");
                         break;
                     }
 
@@ -317,17 +317,17 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
                     // memset(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column ), tmp[0], 1); // Write the scaled byte to the i2c buffer
                     // memset(( Screen.pbuffer + Screen.offset.control + letter_increment + current_column + 1), tmp[1], 1);
-                    level_log(TRACE, "Blah Blah Blah: %X", scale_lut[tmp[0]]);
+                    // level_log(TRACE, "Blah Blah Blah: %X", scale_lut[tmp[0]]);
                 }
             }
 
-            level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
+            // level_log(TRACE, "TESTING...the Screen.pbuffer is equal to: %x",  *(Screen.pbuffer));
             REMOVE_FROM_STACK_DEPTH(); // loading i2c buffer with scaled data
             break;
 
         default:
         /** No scaling applied, and the message is copied into the i2c buffer */
-            level_log(TRACE, "Print: No scale applied");
+            // level_log(TRACE, "Print: No scale applied");
 
             memcpy(Screen.pbuffer, (&SSD1309_RAM_WRITE_BYTE), 1);
 
@@ -353,7 +353,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
                  *      This is only possible because the i2c buffer is loaded with zeros before any data gets written to it.
                  */
                 if( Screen.offset.control + ((Screen.character.width_pad) * letter) + Screen.character.width > Screen.buffer_size) {
-                    level_log(ERROR, "Buffer Size Too Small");
+                    // level_log(ERROR, "Buffer Size Too Small");
                     break;
                 }
                 memcpy((Screen.pbuffer + Screen.offset.control + ((Screen.character.width_pad) * letter)), (((args.text[letter] - Screen.offset.ascii) * Screen.character.width) + Screen.offset.pfont), Screen.character.width);
@@ -369,7 +369,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     case 0:
 
-        level_log(TRACE, "Print: No delay");
+        // level_log(TRACE, "Print: No delay");
         ssd_write(Screen, write_size);
 
         break;
@@ -378,14 +378,14 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
         /** Memory Corruption Error Checking */
         if(Screen.buffer_size < Screen.character.width_pad * args.scale * args.scale + Screen.offset.control) {
-            level_log(ERROR, "Buffer Size Too Small");
+            // level_log(ERROR, "Buffer Size Too Small");
             return 0;
         }
         /** Allocate memory to write a single letter each time */
         uint8_t letter_buffer[33];
         memcpy(&letter_buffer, (&SSD1309_RAM_WRITE_BYTE), Screen.offset.control);
 
-        level_log(TRACE, "Print: Delay of %d", args.delay);
+        // level_log(TRACE, "Print: Delay of %d", args.delay);
 
         /** My own version of the ssd_write function that has a spefic delay for each character built in!! */
         for (int letter_index = 0; letter_index < args.length; letter_index++)
@@ -405,7 +405,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
             if (!i2c.Write(Screen.i2c_address, letter_buffer, (Screen.character.width_pad * (args.scale * args.scale) + Screen.character.pad)))
             {
-                level_log(WARNING, "Print: I2C Bus Busy");
+                // level_log(WARNING, "Print: I2C Bus Busy");
             }
 
             if (!i2c.IsBusy())
@@ -413,12 +413,12 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
                 if (i2c.ErrorGet() == I2C_ERROR_NONE)
                 {
                     // I2C write successful
-                    level_log(TRACE, "Print: I2C Write Successful");
+                    // level_log(TRACE, "Print: I2C Write Successful");
                 }
                 else
                 {
                     // Error handling
-                    level_log(ERROR, "Print: I2C Write Failed");
+                    // level_log(ERROR, "Print: I2C Write Failed");
                 }
             }
 
@@ -443,7 +443,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 
     // Set the page range back to its reset value
     ssd1309_send_command(Screen, SET_PAGE_ADDRESS, 0x0, 0x7);
-    level_log(TRACE, "Print: Done Printing. Setting Memory Addressing Mode to Page Addressing");
+    // level_log(TRACE, "Print: Done Printing. Setting Memory Addressing Mode to Page Addressing");
 
     REMOVE_FROM_STACK_DEPTH(); // ssd1309_print
 
@@ -454,7 +454,7 @@ size_t ssd1309_print(ScreenDefines Screen, Ssd1309Print args) {
 void ssd1309_cls(ScreenDefines Screen) {
 
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "Clearing the screen");
+    // level_log(TRACE, "Clearing the screen");
 
     ssd1309_set_ram_pointer(Screen, Screen.zeroed_ram_ptr);
 
@@ -468,7 +468,7 @@ void ssd1309_cls(ScreenDefines Screen) {
 
     /* No Error check needed since clear_length will always be less than Screen.buffer_size */
     // if(clear_length > Screen.buffer_size) {
-    //     level_log(ERROR, "Buffer Size Too Small");
+    //     // level_log(ERROR, "Buffer Size Too Small");
     //     return;
     // }
 
@@ -477,12 +477,12 @@ void ssd1309_cls(ScreenDefines Screen) {
     unsigned int remainder = total_screen_bytes % clear_length;
 
     // Log debug information
-    level_log(TRACE, "Clear Length is: %d", clear_length);
-    level_log(TRACE, "Screen Width: %d", Screen.ScreenWidth);
-    level_log(TRACE, "Screen Height: %d", Screen.ScreenHeight);
-    level_log(TRACE, "Total Screen Bytes: %d", total_screen_bytes);
-    level_log(TRACE, "Number of Iterations: %d", iterations);
-    level_log(TRACE, "Remainder Bytes: %d", remainder);
+    // level_log(TRACE, "Clear Length is: %d", clear_length);
+    // level_log(TRACE, "Screen Width: %d", Screen.ScreenWidth);
+    // level_log(TRACE, "Screen Height: %d", Screen.ScreenHeight);
+    // level_log(TRACE, "Total Screen Bytes: %d", total_screen_bytes);
+    // level_log(TRACE, "Number of Iterations: %d", iterations);
+    // level_log(TRACE, "Remainder Bytes: %d", remainder);
     
     Screen.pbuffer[0] = SSD1309_RAM_WRITE_BYTE; // Assuming control byte is needed at the start
 
@@ -494,14 +494,14 @@ void ssd1309_cls(ScreenDefines Screen) {
         ssd_write(Screen, Screen.buffer_size);
     }
 
-    level_log(TRACE, "Wrote iterations, Now writing remainder");
+    // level_log(TRACE, "Wrote iterations, Now writing remainder");
 
     // Handle any remaining bytes
     if (remainder > 0) {
         ssd_write(Screen, remainder + Screen.offset.control);
      }
 
-    level_log(TRACE, "SSD1309: Screen Cleared");
+    // level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
 }
 
@@ -511,11 +511,11 @@ void ssd1309_clear_line(ScreenDefines Screen, Ssd1309Clear args)
 
     ADD_TO_STACK_DEPTH();
 
-    level_log(TRACE, "Clearing the screen");
+    // level_log(TRACE, "Clearing the screen");
 
     /** Memory Corruption Error Checking */
     if(Screen.buffer_size < Screen.ScreenWidth + Screen.offset.control) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
         return;
     }
 
@@ -525,7 +525,7 @@ void ssd1309_clear_line(ScreenDefines Screen, Ssd1309Clear args)
     #ifndef USE_STATIC_BUFFERS
     Screen.pbuffer = malloc(129);
     if(!Screen.pbuffer){
-        level_log(ERROR, "Memory allocation failed for the I2C buffer");
+        // level_log(ERROR, "Memory allocation failed for the I2C buffer");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
@@ -541,28 +541,28 @@ void ssd1309_clear_line(ScreenDefines Screen, Ssd1309Clear args)
     }
     // ssd_write(9); // Compensate for the control byte at the start of the buffer. (The for loop really only writes 127 bytes to the screen)
 
-    level_log(TRACE, "SSD1309: Screen Cleared");
+    // level_log(TRACE, "SSD1309: Screen Cleared");
     REMOVE_FROM_STACK_DEPTH();
 }
 
 void ssd1309_clear_word(ScreenDefines Screen, Ssd1309Clear args)
 {
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "Clearing a word of length %d", args.char_length);
+    // level_log(TRACE, "Clearing a word of length %d", args.char_length);
 
     ssd1309_set_ram_pointer(Screen, args.ram_ptr);
 
     #ifndef USE_STATIC_BUFFERS
     Screen.pbuffer = malloc(129);
     if(!Screen.pbuffer){
-        level_log(ERROR, "Memory allocation failed for the I2C buffer");
+        // level_log(ERROR, "Memory allocation failed for the I2C buffer");
         REMOVE_FROM_STACK_DEPTH();
         return;
     }
     #endif
     #ifdef USE_STATIC_BUFFERS
     if( (Screen.character.width_pad * args.char_length + Screen.offset.control) > Screen.buffer_size) { 
-        level_log(ERROR, "Buffer Too Small");
+        // level_log(ERROR, "Buffer Too Small");
         return; 
     }
     #endif
@@ -574,7 +574,7 @@ void ssd1309_clear_word(ScreenDefines Screen, Ssd1309Clear args)
     // Write all the bytes that we manipulated
     ssd_write(Screen, (Screen.character.width_pad * args.char_length) + Screen.offset.control);
 
-    level_log(TRACE, "SSD1309: Word(s) Cleared");
+    // level_log(TRACE, "SSD1309: Word(s) Cleared");
     REMOVE_FROM_STACK_DEPTH();
 }
 
@@ -582,12 +582,12 @@ void ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor args)
 {
     /** Start by keeping track of how many function calls deep we are */
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "Blinking Cursor: page %u, column %u, repeats %u", args.ram_ptr.page, args.ram_ptr.position, args.repeats);
+    // level_log(TRACE, "Blinking Cursor: page %u, column %u, repeats %u", args.ram_ptr.page, args.ram_ptr.position, args.repeats);
 
     size_t size;
 
     if(Screen.offset.control + 5 > Screen.buffer_size) {
-        level_log(ERROR, "Buffer Size Too Small");
+        // level_log(ERROR, "Buffer Size Too Small");
     }
 
     /** malloc so that the cursor doesn't take up extra space */
@@ -614,7 +614,7 @@ void ssd1309_blinking_cursor(ScreenDefines Screen, Ssd1309Cursor args)
         __delay_ms(200);
     }
 
-    level_log(TRACE, "Blinking Cursor: Done Blinking Cursor");
+    // level_log(TRACE, "Blinking Cursor: Done Blinking Cursor");
     REMOVE_FROM_STACK_DEPTH();
 }
 
@@ -626,7 +626,7 @@ void ssd1309_progress_bar(ScreenDefines Screen )
 void ssd1309_waiting(ScreenDefines Screen)
 {
     ADD_TO_STACK_DEPTH();
-    level_log(TRACE, "SSD1309 Waiting...");
+    // level_log(TRACE, "SSD1309 Waiting...");
     
     uint8_t animation_length = 14;
     Ssd1309RamPointer wait_ram_ptr = {
@@ -636,7 +636,7 @@ void ssd1309_waiting(ScreenDefines Screen)
 
     /* Memory Corruption Error Checking */
     if(Screen.buffer_size < animation_length + Screen.offset.control) { 
-        level_log(ERROR, "Buffer Too Small"); 
+        // level_log(ERROR, "Buffer Too Small"); 
         return; 
     }
 
@@ -689,7 +689,7 @@ void ssd1309_waiting(ScreenDefines Screen)
         //     break;
     }
 
-    level_log(TRACE, "SSD1309 Done Waiting");
+    // level_log(TRACE, "SSD1309 Done Waiting");
     REMOVE_FROM_STACK_DEPTH();
     return;
 }

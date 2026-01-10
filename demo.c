@@ -12,16 +12,16 @@ void screen_demo(Ssd1309Defines OLED){
     int something_random = 0;
     OLED.print.ram_ptr.position = 0;
 
-    level_log(INFO, "Starting Loop");
+    // level_log(INFO, "Starting Loop");
 
-    level_log(TRACE, "Blinking Cursor at %d", OLED.print.ram_ptr.position);
+    // level_log(TRACE, "Blinking Cursor at %d", OLED.print.ram_ptr.position);
 
     OLED.cursor.ram_ptr.page = 0;
     OLED.cursor.ram_ptr.position = 0;
     OLED.cursor.repeats = 4;
 
     ssd1309_blinking_cursor(OLED.Screen, OLED.cursor);
-    level_log(TRACE, "Done Blinking Cursor");
+    // level_log(TRACE, "Done Blinking Cursor");
 
     for(uint8_t i = 0; i < 8; i++) {
         OLED.print.text = "Line: ",
@@ -42,14 +42,14 @@ void screen_demo(Ssd1309Defines OLED){
         ssd1309_write_number(OLED.Screen, OLED.write_number);
     }
 
-    level_log(TRACE, "Blinking Cursor at %d", OLED.print.ram_ptr.position);
+    // level_log(TRACE, "Blinking Cursor at %d", OLED.print.ram_ptr.position);
 
     OLED.cursor.ram_ptr.page = 3;
     OLED.cursor.ram_ptr.position = 15;
     OLED.cursor.repeats = 5;
 
     ssd1309_blinking_cursor(OLED.Screen, OLED.cursor);
-    level_log(TRACE, "Done Blinking Cursor");
+    // level_log(TRACE, "Done Blinking Cursor");
 
     uint8_t number_placement = 30;
     OLED.print.text = "# OF PROBLEMS: ";
@@ -58,16 +58,16 @@ void screen_demo(Ssd1309Defines OLED){
     OLED.print.ram_ptr.page = 3;
     OLED.print.ram_ptr.position = number_placement;
 
-    level_log(TRACE, "Printing Message  \"%s\"...", OLED.print.text);
+    // level_log(TRACE, "Printing Message  \"%s\"...", OLED.print.text);
     number_placement += ssd1309_print(OLED.Screen, OLED.print);
-    level_log(TRACE, "Done Printing Message");
+    // level_log(TRACE, "Done Printing Message");
 
     OLED.write_number.ram_ptr.position = number_placement + 4;
     OLED.write_number.ram_ptr.page = OLED.print.ram_ptr.page;
     OLED.write_number.scale = 0;
     OLED.write_number.constrained_length = 6;
     OLED.write_number.data = rand();
-    level_log(TRACE, "Printing Number %d...", OLED.write_number.data);
+    // level_log(TRACE, "Printing Number %d...", OLED.write_number.data);
 
     /* Write a few different numbers to the screen */
     for(int i = 0; i>7; i++){
@@ -75,12 +75,12 @@ void screen_demo(Ssd1309Defines OLED){
         ssd1309_write_number(OLED.Screen, OLED.write_number);
         __delay_ms(600);
     }
-    level_log(TRACE, "Done Printing Number");
+    // level_log(TRACE, "Done Printing Number");
 
     __delay_ms(1000);
     ssd1309_cls(OLED.Screen);
-    level_log(TRACE, "Clearing Screen");
+    // level_log(TRACE, "Clearing Screen");
 
-    level_log(INFO, "... End of Loop ...");
+    // level_log(INFO, "... End of Loop ...");
     REMOVE_FROM_STACK_DEPTH();
 }
